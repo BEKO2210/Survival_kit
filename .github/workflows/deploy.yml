@@ -1,0 +1,92 @@
+# =============================================================================
+#  Survival Guide - GitHub Pages Deployment
+# =============================================================================
+#  Automatisches Build & Deployment auf GitHub Pages
+#  Astro 4.x + TailwindCSS → Static Site → GitHub Pages
+#  Service Worker Version wird automatisch mit Datum+Uhrzeit gesetzt
+# =============================================================================
+
+name: 🚀 Deploy Survival Guide to GitHub Pages
+
+on:
+  # Bei Push auf main/master automatisch deployen
+  push:
+    branches: [main, master]
+
+  # Manuelles Deployment über GitHub UI (Actions → Run workflow)
+  workflow_dispatch:
+
+# Berechtigungen für GitHub Pages Deployment
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Nur ein Deployment gleichzeitig - laufende abbrechen
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+# =============================================================================
+#  Jobs
+# =============================================================================
+jobs:
+  # ---------------------------------------------------------------------------
+  #  1. BUILD - Projekt bauen und Artefakte erstellen
+  # ---------------------------------------------------------------------------
+  build:
+    name: 🔨 Build
+    runs-on: ubuntu-latest
+    steps:
+      # --- Checkout ---
+      - name: 📥 Repository auschecken
+        uses: actions/checkout@v4
+
+      # --- Node.js Setup ---
+      - name: 📦 Node.js 20 einrichten
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      # --- Dependencies installieren ---
+      - name: 📚 Abhängigkeiten installieren
+        run: npm install
+
+      # --- Build-Version generieren (Datum + Uhrzeit) ---
+      - name: 🏷️ Build-Version setzen
+        run: |
+          BUILD_VERSION=$(TZ='Europe/Berlin' date '+%Y-%m-%d_%H-%M')
+          echo "BUILD_VERSION=$BUILD_VERSION" >> $GITHUB_ENV
+          echo "📌 Build-Version: $BUILD_VERSION"
+
+      # --- Astro Build ---
+      - name: 🏗️ Astro Projekt bauen
+        run: npm run build
+
+      # --- Version in Service Worker injizieren ---
+      - name: 🔄 Service Worker versionieren
+        run: |
+          sed -i "s/__BUILD_VERSION__/${{ env.BUILD_VERSION }}/g" dist/sw.js
+          echo "✅ SW-Version gesetzt: ${{ env.BUILD_VERSION }}"
+          head -2 dist/sw.js
+
+      # --- Pages Artefakt hochladen ---
+      - name: 📤 Build-Artefakte hochladen
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./dist
+
+  # ---------------------------------------------------------------------------
+  #  2. DEPLOY - Auf GitHub Pages veröffentlichen
+  # ---------------------------------------------------------------------------
+  deploy:
+    name: 🌍 Deploy
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: 🚀 Auf GitHub Pages deployen
+        id: deployment
+        uses: actions/deploy-pages@v4

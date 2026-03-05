@@ -1,0 +1,1286 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Navigation from '../components/Navigation.astro';
+import SectionHeader from '../components/SectionHeader.astro';
+import BentoCard from '../components/BentoCard.astro';
+import PdfButton from '../components/PdfButton.astro';
+import {
+  waterNeeds, waterStorage, waterPurification,
+  foodItems, shoppingLists, firstAidKit,
+  toolsAndEquipment, hygieneItems, importantDocuments,
+  childrenSpecial, emergencyPlan, survivalScenarios,
+  nuclearBombs, conventionalBombs, shelterTypes, shelterMaterials, falloutRules,
+  offlineApps,
+} from '../data/survivalData';
+
+const foodCategories = [...new Set(foodItems.map(f => f.category))];
+
+function badgeClass(p: string) {
+  return p === 'hoch' ? 'badge badge-high' : p === 'mittel' ? 'badge badge-mid' : 'badge badge-low';
+}
+---
+
+<Layout title="WW3 Survival Guide -- Krisenvorsorge für dich und deine Familie">
+  <Navigation />
+
+  <!-- Search overlay -->
+  <div id="search-overlay" class="fixed inset-0 z-[60] bg-surface-0/95 backdrop-blur-xl hidden">
+    <div class="max-w-2xl mx-auto px-4 pt-20 sm:pt-28">
+      <div class="flex items-center gap-3 mb-6">
+        <input id="search-input" type="search" placeholder="Suche z.B. Reis, Erste Hilfe, Wasserfilter..." autocomplete="off"
+          class="flex-1 bg-surface-200 border border-surface-300 rounded-xl px-4 py-3 text-sm text-surface-900 placeholder-surface-600 focus:outline-none focus:ring-2 focus:ring-brand-500" />
+        <button id="search-close" type="button" class="p-2.5 rounded-lg bg-surface-200 hover:bg-surface-300 text-surface-700 transition-colors" aria-label="Suche schließen">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+      </div>
+      <div id="search-results" class="space-y-2 max-h-[60vh] overflow-y-auto"></div>
+    </div>
+  </div>
+
+  <main class="min-h-screen">
+    <!-- ===== HERO ===== -->
+    <section id="start" class="relative min-h-[100svh] flex items-center justify-center px-4 pt-16 overflow-hidden">
+      <div class="absolute inset-0 bg-surface-0 hero-gradient">
+        <div class="absolute top-1/3 left-1/4 w-[28rem] h-[28rem] bg-red-500/[0.04] rounded-full blur-[100px] animate-pulse-soft"></div>
+        <div class="absolute bottom-1/3 right-1/4 w-[24rem] h-[24rem] bg-brand-600/[0.04] rounded-full blur-[100px] animate-pulse-soft" style="animation-delay: 1.5s;"></div>
+      </div>
+      <div class="absolute inset-0 opacity-[0.02]" style="background-image: radial-gradient(circle, #ef4444 1px, transparent 1px); background-size: 32px 32px;"></div>
+
+      <div class="relative z-10 text-center max-w-3xl mx-auto">
+        <div class="mb-6" data-animate>
+          <span class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-red-500/10 border border-red-500/20 text-red-400 text-xs font-medium tracking-wide">
+            <span class="w-1.5 h-1.5 rounded-full bg-red-400 animate-pulse-soft"></span>
+            Krisenvorsorge & Überleben
+          </span>
+        </div>
+
+        <h1 class="text-4xl sm:text-6xl lg:text-7xl font-bold tracking-tight mb-5" data-animate>
+          <span class="text-red-400">WW3</span>
+          <span class="text-surface-950 ml-2">Survival Guide</span>
+        </h1>
+
+        <p class="text-base sm:text-lg text-surface-600 max-w-xl mx-auto mb-10 leading-relaxed" data-animate>
+          Ich hab das hier zusammengestellt, weil ich selbst Vater bin und wissen will,
+          dass meine Familie vorbereitet ist. Alles recherchiert, alles als PDF zum Ausdrucken.
+        </p>
+
+        <!-- Stats -->
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 max-w-2xl mx-auto mb-10" data-animate>
+          <div class="card text-center py-4">
+            <div class="text-2xl font-bold text-brand-400">{foodItems.length}+</div>
+            <div class="text-xs text-surface-600 mt-0.5">Lebensmittel</div>
+          </div>
+          <div class="card text-center py-4">
+            <div class="text-2xl font-bold text-blue-400">14</div>
+            <div class="text-xs text-surface-600 mt-0.5">Sektionen</div>
+          </div>
+          <div class="card text-center py-4">
+            <div class="text-2xl font-bold text-amber-400">{firstAidKit.items.length}</div>
+            <div class="text-xs text-surface-600 mt-0.5">Erste-Hilfe Artikel</div>
+          </div>
+          <div class="card text-center py-4">
+            <div class="text-2xl font-bold text-rose-400">{emergencyPlan.length}</div>
+            <div class="text-xs text-surface-600 mt-0.5">Notfall-Schritte</div>
+          </div>
+        </div>
+
+        <!-- CTA -->
+        <div class="flex flex-col sm:flex-row gap-3 justify-center" data-animate>
+          <a href="#downloads" class="cta-glow px-6 py-3 bg-red-600 hover:bg-red-500 text-white rounded-xl font-semibold text-sm transition-all hover:shadow-lg hover:shadow-red-600/20 hover:scale-[1.02] active:scale-[0.98]">
+            Alle PDFs herunterladen
+          </a>
+          <a href="#notfallplan" class="px-6 py-3 bg-surface-200 hover:bg-surface-300 border border-surface-300 text-surface-900 rounded-xl font-semibold text-sm transition-all">
+            Notfallplan ansehen
+          </a>
+        </div>
+
+        <div class="mt-14 text-surface-600" data-animate>
+          <svg class="w-5 h-5 mx-auto animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 13.5L12 21m0 0l-7.5-7.5M12 21V3" />
+          </svg>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== WASSER ===== -->
+    <section class="py-3 sm:py-4 px-4 sm:px-6 max-w-7xl mx-auto">
+      <details class="section-card group">
+        <SectionHeader id="wasser" title="Wasser" subtitle="Ohne Wasser hast du 3 Tage. Punkt." accent="blue" collapsible />
+
+      <div class="section-content">
+      <div class="mb-4 sm:flex sm:justify-end" data-animate>
+        <PdfButton pdfType="water" label="Wasser PDF" sublabel="Bedarf & Aufbereitung" accent="blue" />
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" data-animate>
+        <div class="card lg:col-span-2">
+          <div class="mb-4">
+            <h3 class="text-sm font-semibold text-blue-400 tracking-wide uppercase">Täglicher Wasserbedarf</h3>
+          </div>
+          <div class="space-y-2">
+            {waterNeeds.map((w) => (
+              <div class="flex items-center justify-between p-3 rounded-lg bg-surface-200/50 hover:bg-surface-200 transition-colors" data-stagger>
+                <div>
+                  <span class="text-sm font-medium text-surface-900">{w.situation}</span>
+                  <span class="text-xs text-surface-600 ml-2 hidden sm:inline">-- {w.notes}</span>
+                </div>
+                <span class="text-sm font-semibold text-blue-400 whitespace-nowrap ml-3">{w.perPersonPerDay}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div class="card card-accent">
+          <h3 class="text-sm font-semibold text-brand-400 tracking-wide uppercase mb-4">Vorrat für 14 Tage</h3>
+          <div class="space-y-3.5">
+            {waterStorage.items.map((item) => (
+              <div data-stagger>
+                <div class="flex justify-between items-center text-sm">
+                  <span class="text-surface-800">{item.group}</span>
+                  <span class="font-semibold text-brand-400">{item.amount}</span>
+                </div>
+                <div class="text-2xs text-surface-600">{item.note}</div>
+                <div class="mt-1.5 h-1 bg-surface-300 rounded-full overflow-hidden">
+                  <div class="h-full bg-brand-600 rounded-full" style={`width: ${Math.min(100, (item.liters / 140) * 100)}%`}></div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div class="card lg:col-span-3">
+          <h3 class="text-sm font-semibold text-blue-400 tracking-wide uppercase mb-4">Wasseraufbereitung</h3>
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
+            {waterPurification.map((m) => (
+              <div class="p-4 rounded-xl bg-surface-200/50 hover:bg-surface-200 transition-colors" data-stagger>
+                <h4 class="font-semibold text-sm text-surface-900 mb-1.5">{m.method}</h4>
+                <p class="text-xs text-surface-600 mb-3 leading-relaxed">{m.description}</p>
+                <div class="flex justify-between text-2xs text-surface-600">
+                  <span>{m.effectiveness}</span>
+                  <span>Aufwand: {m.effort}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      <!-- Wasserrechner -->
+      <div class="card card-accent p-6 mt-6" data-animate>
+        <h3 class="text-sm font-bold text-surface-950 mb-2">Wasserrechner — Wie viel brauchst du?</h3>
+        <div class="grid grid-cols-1 sm:grid-cols-4 gap-4">
+          <div>
+            <label for="water-adults" class="text-xs font-semibold text-surface-700 block mb-1">Erwachsene</label>
+            <input id="water-adults" type="number" min="0" value="2" class="w-full bg-surface-200 border border-surface-300 rounded-lg px-3 py-2 text-sm text-surface-900" />
+          </div>
+          <div>
+            <label for="water-kids" class="text-xs font-semibold text-surface-700 block mb-1">Kinder</label>
+            <input id="water-kids" type="number" min="0" value="3" class="w-full bg-surface-200 border border-surface-300 rounded-lg px-3 py-2 text-sm text-surface-900" />
+          </div>
+          <div>
+            <label for="water-days" class="text-xs font-semibold text-surface-700 block mb-1">Tage</label>
+            <input id="water-days" type="number" min="1" value="14" class="w-full bg-surface-200 border border-surface-300 rounded-lg px-3 py-2 text-sm text-surface-900" />
+          </div>
+          <div class="flex items-end">
+            <button id="water-calc-btn" type="button" class="w-full px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-lg text-sm font-semibold transition-colors cursor-pointer">Berechnen</button>
+          </div>
+        </div>
+        <div id="water-result" class="mt-4 p-4 bg-surface-200/50 rounded-lg text-sm text-surface-700 hidden" aria-live="polite" aria-atomic="true" role="status"></div>
+      </div>
+      </div>
+      </details>
+    </section>
+
+    <!-- ===== NAHRUNG ===== -->
+    <section class="py-3 sm:py-4 px-4 sm:px-6 max-w-7xl mx-auto">
+      <details class="section-card group">
+        <SectionHeader id="nahrung" title="Nahrung & Haltbarkeit" subtitle="Was wirklich lange hält und was du brauchst." accent="amber" collapsible />
+
+      <div class="section-content">
+      <div class="mb-4 sm:flex sm:justify-end" data-animate>
+        <PdfButton pdfType="food" label="Nahrungsmittel PDF" sublabel={`${foodItems.length} Artikel (mehrseitig)`} accent="amber" />
+      </div>
+
+      <div class="sticky top-14 sm:top-16 z-30 bg-surface-0/95 backdrop-blur-md py-3 -mx-4 sm:-mx-6 px-4 sm:px-6 border-b border-surface-300/50">
+        <div class="flex items-center gap-2 overflow-x-auto no-scrollbar pb-1" role="tablist" aria-label="Lebensmittel-Kategorien">
+          <button class="food-tab tab is-active shrink-0" data-category="all" role="tab" aria-selected="true" aria-controls="food-table">Alle ({foodItems.length})</button>
+          {foodCategories.map((cat) => (
+            <button class="food-tab tab shrink-0" data-category={cat} role="tab" aria-selected="false" aria-controls="food-table">{cat} ({foodItems.filter(f => f.category === cat).length})</button>
+          ))}
+        </div>
+      </div>
+
+      <div id="food-table" role="tabpanel">
+        <div class="overflow-x-auto rounded-xl border border-surface-300">
+          <table class="w-full text-sm">
+            <thead>
+              <tr class="bg-surface-200 text-surface-600 text-xs uppercase tracking-wider">
+                <th scope="col" class="text-left p-3 sm:p-4 font-medium">Lebensmittel</th>
+                <th scope="col" class="text-left p-3 sm:p-4 font-medium">Haltbarkeit</th>
+                <th scope="col" class="text-left p-3 sm:p-4 font-medium hidden sm:table-cell">Lagerung</th>
+                <th scope="col" class="text-center p-3 sm:p-4 font-medium hidden md:table-cell">kcal/100g</th>
+                <th scope="col" class="text-center p-3 sm:p-4 font-medium">Prio</th>
+              </tr>
+            </thead>
+            <tbody>
+              {foodItems.map((food, idx) => (
+                <tr class={`food-row border-t border-surface-300/50 hover:bg-surface-200/30 transition-colors ${idx >= 20 ? 'food-hidden-row hidden' : ''}`} data-category={food.category}>
+                  <td class="p-3 sm:p-4">
+                    <div class="font-medium text-surface-900">{food.name}</div>
+                    <div class="text-xs text-surface-600 mt-0.5 sm:hidden">{food.storage}</div>
+                  </td>
+                  <td class="p-3 sm:p-4 font-semibold text-amber-400 whitespace-nowrap">{food.shelf_life}</td>
+                  <td class="p-3 sm:p-4 text-surface-600 text-xs hidden sm:table-cell">{food.storage}</td>
+                  <td class="p-3 sm:p-4 text-center text-surface-700 hidden md:table-cell">{food.calories_per_100g}</td>
+                  <td class="p-3 sm:p-4 text-center"><span class={badgeClass(food.priority)}>{food.priority}</span></td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        <div id="food-show-all-wrap" class="text-center mt-4">
+          <button id="food-show-all" type="button" class="px-6 py-2.5 bg-surface-200 hover:bg-surface-300 border border-surface-300 text-surface-800 rounded-lg text-sm font-semibold transition-colors cursor-pointer">
+            Alle {foodItems.length} Lebensmittel anzeigen
+          </button>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-8" data-animate>
+        <BentoCard accent>
+          <h4 class="font-semibold text-brand-400 text-sm mb-1">Unbegrenzt haltbar</h4>
+          <p class="text-xs text-surface-600 leading-relaxed">Zucker, Honig, Salz und Essig halten ewig - solange sie trocken gelagert werden.</p>
+        </BentoCard>
+        <BentoCard>
+          <h4 class="font-semibold text-amber-400 text-sm mb-1">Beste Langzeitnahrung</h4>
+          <p class="text-xs text-surface-600 leading-relaxed">Reis hält bis zu 30 Jahre, Hülsenfrüchte 10 Jahre, NRG-5 sogar 20 Jahre. Die absoluten Gewinner.</p>
+        </BentoCard>
+        <BentoCard>
+          <h4 class="font-semibold text-blue-400 text-sm mb-1">Konserven als Basis</h4>
+          <p class="text-xs text-surface-600 leading-relaxed">Konserven halten 3-5 Jahre, brauchen keinen Strom und sind sofort essbar. Goldwert wenn nichts mehr geht.</p>
+        </BentoCard>
+      </div>
+
+      <!-- Kalorienrechner -->
+      <div class="card card-accent p-6 mt-6" data-animate>
+        <h3 class="text-sm font-bold text-surface-950 mb-2">Kalorienrechner — Wie viel Nahrung für wie lange?</h3>
+        <div class="grid grid-cols-1 sm:grid-cols-4 gap-4">
+          <div>
+            <label for="cal-persons" class="text-xs font-semibold text-surface-700 block mb-1">Personen</label>
+            <input id="cal-persons" type="number" min="1" value="5" class="w-full bg-surface-200 border border-surface-300 rounded-lg px-3 py-2 text-sm text-surface-900" />
+          </div>
+          <div>
+            <label for="cal-daily" class="text-xs font-semibold text-surface-700 block mb-1">kcal/Person/Tag</label>
+            <input id="cal-daily" type="number" min="500" value="2000" class="w-full bg-surface-200 border border-surface-300 rounded-lg px-3 py-2 text-sm text-surface-900" />
+          </div>
+          <div>
+            <label for="cal-days" class="text-xs font-semibold text-surface-700 block mb-1">Tage</label>
+            <input id="cal-days" type="number" min="1" value="14" class="w-full bg-surface-200 border border-surface-300 rounded-lg px-3 py-2 text-sm text-surface-900" />
+          </div>
+          <div class="flex items-end">
+            <button id="cal-calc-btn" type="button" class="w-full px-4 py-2 bg-amber-600 hover:bg-amber-500 text-white rounded-lg text-sm font-semibold transition-colors cursor-pointer">Berechnen</button>
+          </div>
+        </div>
+        <div id="cal-result" class="mt-4 p-4 bg-surface-200/50 rounded-lg text-sm text-surface-700 hidden" aria-live="polite" aria-atomic="true" role="status"></div>
+      </div>
+      </div>
+      </details>
+    </section>
+
+    <!-- ===== EINKAUFSLISTEN ===== -->
+    <section class="py-3 sm:py-4 px-4 sm:px-6 max-w-7xl mx-auto">
+      <details class="section-card group">
+        <SectionHeader id="einkaufslisten" title="Einkaufslisten" subtitle="Fertige Listen für jede Haushaltsgröße." accent="brand" collapsible />
+
+      <div class="section-content">
+      <div class="flex flex-wrap gap-2 mb-8" data-animate role="tablist" aria-label="Einkaufslisten">
+        {shoppingLists.map((list, i) => (
+          <button class={`shop-tab tab ${i === 0 ? 'is-active' : ''}`} data-idx={String(i)} role="tab" aria-selected={i === 0 ? 'true' : 'false'} aria-controls={`shop-panel-${i}`}>
+            {list.title}
+          </button>
+        ))}
+      </div>
+
+      {shoppingLists.map((list, listIndex) => {
+        const categories = [...new Set(list.items.map(i => i.category))];
+        return (
+          <div class={`shop-panel ${listIndex === 0 ? '' : 'hidden'}`} data-idx={String(listIndex)} id={`shop-panel-${listIndex}`} role="tabpanel">
+            <div data-animate>
+              <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">
+                <div>
+                  <h3 class="text-xl font-bold text-surface-950">{list.title}</h3>
+                  <p class="text-sm text-surface-600">{list.description} -- {list.items.length} Artikel</p>
+                </div>
+                <PdfButton pdfType={`shop-${listIndex}`} label="Als PDF herunterladen" sublabel={`${list.items.length} Artikel`} accent="brand" />
+              </div>
+
+              <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                {categories.map((cat) => (
+                  <BentoCard accent={cat === 'Wasser' || cat === 'Notnahrung'}>
+                    <h4 class="text-xs font-semibold text-surface-600 uppercase tracking-wider mb-3 flex items-center gap-2">
+                      <span class="w-1.5 h-1.5 rounded-full bg-brand-500"></span>
+                      {cat}
+                    </h4>
+                    <ul class="space-y-1.5">
+                      {list.items.filter(i => i.category === cat).map((item) => (
+                        <li class="flex justify-between items-start gap-2 text-sm" data-stagger>
+                          <span class="text-surface-800">{item.name}</span>
+                          <span class="text-brand-400 font-medium whitespace-nowrap text-xs">{item.amount}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </BentoCard>
+                ))}
+              </div>
+            </div>
+          </div>
+        );
+      })}
+      </div>
+      </details>
+    </section>
+
+    <!-- ===== ERSTE HILFE ===== -->
+    <section class="py-3 sm:py-4 px-4 sm:px-6 max-w-7xl mx-auto">
+      <details class="section-card group">
+        <SectionHeader id="erste-hilfe" title="Erste Hilfe" subtitle="Zusammengestellt nach DRK-Empfehlungen." accent="rose" collapsible />
+
+      <div class="section-content">
+      <div data-animate>
+        <div class="mb-4 sm:flex sm:justify-end">
+          <PdfButton pdfType="firstaid" label="Erste-Hilfe PDF" sublabel={`${firstAidKit.items.length} Artikel`} accent="rose" />
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
+          {firstAidKit.items.map((item) => (
+            <div class="flex items-center justify-between p-3.5 rounded-xl bg-surface-100 border border-surface-300/50 hover:border-surface-400 transition-colors" data-stagger>
+              <div class="flex items-center gap-2.5 min-w-0">
+                <span class={`flex-shrink-0 w-1.5 h-1.5 rounded-full ${item.priority === 'hoch' ? 'bg-rose-500' : item.priority === 'mittel' ? 'bg-amber-500' : 'bg-blue-500'}`}></span>
+                <span class="text-sm text-surface-800 truncate">{item.item}</span>
+              </div>
+              <div class="flex items-center gap-2 flex-shrink-0 ml-2">
+                <span class="text-xs text-surface-600">{item.amount}</span>
+                <span class={badgeClass(item.priority)}>{item.priority}</span>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+      </div>
+      </details>
+    </section>
+
+    <!-- ===== AUSRÜSTUNG ===== -->
+    <section class="py-3 sm:py-4 px-4 sm:px-6 max-w-7xl mx-auto">
+      <details class="section-card group">
+        <SectionHeader id="ausruestung" title="Ausrüstung & Werkzeuge" subtitle="Das brauchst du, um ohne Strom klarzukommen." accent="orange" collapsible />
+
+      <div class="section-content">
+      <div class="mb-4 sm:flex sm:justify-end" data-animate>
+        <PdfButton pdfType="equipment" label="Ausrüstung PDF" sublabel="Komplette Liste" accent="amber" />
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" data-animate>
+        {toolsAndEquipment.map((group) => (
+          <BentoCard span={group.category === 'Schutz & Wärme' ? 'lg:col-span-2' : ''}>
+            <h3 class="text-sm font-semibold text-surface-950 uppercase tracking-wide mb-4">{group.category}</h3>
+            <div class="space-y-1.5">
+              {group.items.map((item) => (
+                <div class="flex items-start justify-between p-2.5 rounded-lg bg-surface-200/40 hover:bg-surface-200 transition-colors text-sm" data-stagger>
+                  <div class="min-w-0">
+                    <span class="font-medium text-surface-800">{item.name}</span>
+                    <span class="text-xs text-surface-600 block">{item.note}</span>
+                  </div>
+                  <span class="text-xs font-medium text-amber-400 whitespace-nowrap ml-3 mt-0.5">{item.amount}</span>
+                </div>
+              ))}
+            </div>
+          </BentoCard>
+        ))}
+      </div>
+      </div>
+      </details>
+    </section>
+
+    <!-- ===== HYGIENE ===== -->
+    <section class="py-3 sm:py-4 px-4 sm:px-6 max-w-7xl mx-auto">
+      <details class="section-card group">
+        <SectionHeader id="hygiene" title="Hygiene" subtitle="Ohne Hygiene breiten sich Krankheiten schneller aus als alles andere." accent="cyan" collapsible />
+
+      <div class="section-content">
+      <div data-animate>
+        <div class="mb-4 sm:flex sm:justify-end">
+          <PdfButton pdfType="hygiene" label="Hygiene PDF" sublabel={`${hygieneItems.length} Artikel`} accent="cyan" />
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
+          {hygieneItems.map((item) => (
+            <div class="flex items-center justify-between p-3.5 rounded-xl bg-surface-100 border border-surface-300/50 hover:border-surface-400 transition-colors" data-stagger>
+              <div class="flex items-center gap-2.5">
+                <span class={`w-1.5 h-1.5 rounded-full ${item.priority === 'hoch' ? 'bg-cyan-400' : item.priority === 'mittel' ? 'bg-cyan-600' : 'bg-surface-500'}`}></span>
+                <span class="text-sm text-surface-800">{item.name}</span>
+              </div>
+              <span class="text-xs font-medium text-cyan-400 whitespace-nowrap ml-2">{item.amount}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+      </div>
+      </details>
+    </section>
+
+    <!-- ===== KINDER ===== -->
+    <section class="py-3 sm:py-4 px-4 sm:px-6 max-w-7xl mx-auto">
+      <details class="section-card group">
+        <SectionHeader id="kinder" title="Kinder im Krieg schützen" subtitle="Die Kleinen merken alles. Vorbereitung gibt Sicherheit." accent="pink" collapsible />
+
+      <div class="section-content">
+      <div class="mb-4 sm:flex sm:justify-end" data-animate>
+        <PdfButton pdfType="children" label="Kinder PDF" sublabel="Nach Altersgruppe" accent="pink" />
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4" data-animate>
+        {childrenSpecial.map((group) => (
+          <BentoCard>
+            <h3 class="text-sm font-semibold text-surface-950 uppercase tracking-wide mb-4">{group.category}</h3>
+            <ul class="space-y-1.5">
+              {group.items.map((item) => (
+                <li class="flex items-start gap-2 text-sm text-surface-700" data-stagger>
+                  <svg class="w-3.5 h-3.5 text-brand-500 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" aria-hidden="true">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                  </svg>
+                  {item}
+                </li>
+              ))}
+            </ul>
+          </BentoCard>
+        ))}
+      </div>
+
+      <div class="card card-accent mt-6" data-animate>
+        <h4 class="font-bold text-brand-400 text-sm uppercase tracking-wide mb-4">Tipp für Familien mit 3 Kindern</h4>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-3">
+          {[
+            { t: "Notgepäck pro Kind", d: "Jedes Kind bekommt einen eigenen Rucksack mit Kuscheltier, Snacks, Trinkflasche und Taschenlampe." },
+            { t: "Buddy-System", d: "Das älteste Kind bekommt Verantwortung für ein jüngeres. Fördert Zusammenhalt." },
+            { t: "Routine beibehalten", d: "Feste Essens- und Schlafenszeiten geben Sicherheit, auch im Chaos." },
+            { t: "Spiele vorbereiten", d: "Kartenspiele, Malbücher, Bücher. Langeweile ist der Feind der Moral." },
+            { t: "Erklären, nicht verschweigen", d: "Altersgerecht erklären was passiert. Kinder spüren Unsicherheit." },
+            { t: "Kalorienbedarf", d: "3 Kinder brauchen zusammen fast so viel wie 2 Erwachsene. Ausreichend planen." },
+            { t: "Medikamente", d: "Fiebersaft, Durchfallmittel, evtl. Antibiotika-Saft. IMMER ausreichend bevorraten." },
+          ].map((tip) => (
+            <div class="text-sm" data-stagger>
+              <span class="font-semibold text-surface-900">{tip.t}:</span>
+              <span class="text-surface-600 ml-1">{tip.d}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+      </div>
+      </details>
+    </section>
+
+    <!-- ===== DOKUMENTE ===== -->
+    <section class="py-3 sm:py-4 px-4 sm:px-6 max-w-7xl mx-auto">
+      <details class="section-card group">
+        <SectionHeader id="dokumente" title="Wichtige Dokumente" subtitle="Wasserdichte Mappe vorbereiten." accent="violet" collapsible />
+
+      <div class="section-content">
+      <div data-animate>
+        <div class="mb-4 sm:flex sm:justify-end">
+          <PdfButton pdfType="documents" label="Dokumente PDF" sublabel={`${importantDocuments.length} Unterlagen`} accent="violet" />
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+          {importantDocuments.map((doc, i) => (
+            <div class="flex items-start gap-4 p-4 rounded-xl bg-surface-100 border border-surface-300/50 hover:border-violet-500/30 transition-colors" data-stagger>
+              <div class="w-7 h-7 rounded-md bg-violet-500/10 flex items-center justify-center flex-shrink-0">
+                <span class="text-violet-400 text-xs font-bold font-mono">{String(i + 1).padStart(2, '0')}</span>
+              </div>
+              <div class="min-w-0">
+                <span class="text-sm font-medium text-surface-900">{doc.document}</span>
+                <span class="text-xs text-surface-600 block mt-0.5">{doc.note}</span>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+      </div>
+      </details>
+    </section>
+
+    <!-- ===== NOTFALLPLAN ===== -->
+    <section class="py-3 sm:py-4 px-4 sm:px-6 max-w-7xl mx-auto">
+      <details class="section-card group">
+        <SectionHeader id="notfallplan" title="Notfallplan" subtitle="Ausdrucken und an den Kühlschrank hängen." accent="red" collapsible />
+
+      <div class="section-content">
+      <div data-animate>
+        <div class="mb-4 sm:flex sm:justify-end">
+          <PdfButton pdfType="emergency" label="Notfallplan PDF" sublabel="10 Schritte" accent="red" />
+        </div>
+        <div class="space-y-3">
+          {emergencyPlan.map((step) => (
+            <div class="flex items-start gap-4 sm:gap-5 p-4 sm:p-5 rounded-xl bg-surface-100 border border-surface-300/50 hover:border-rose-500/20 transition-all group" data-stagger>
+              <div class="flex-shrink-0 w-10 h-10 rounded-lg bg-gradient-to-br from-rose-500 to-red-600 flex items-center justify-center text-white font-bold text-sm group-hover:scale-105 transition-transform">
+                {String(step.step).padStart(2, '0')}
+              </div>
+              <div>
+                <h4 class="font-semibold text-surface-950 group-hover:text-rose-400 transition-colors">{step.title}</h4>
+                <p class="text-sm text-surface-600 mt-0.5 leading-relaxed">{step.description}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+      </div>
+      </details>
+    </section>
+
+    <!-- ===== SZENARIEN ===== -->
+    <section class="py-3 sm:py-4 px-4 sm:px-6 max-w-7xl mx-auto">
+      <details class="section-card group">
+        <SectionHeader id="szenarien" title="Szenarien" subtitle="Realistische Situationen, nicht Hollywood." accent="amber" collapsible />
+
+      <div class="section-content">
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" data-animate>
+        {survivalScenarios.map((s) => (
+          <BentoCard>
+            <div class="mb-3">
+              <h3 class="font-bold text-surface-950">{s.title}</h3>
+              <span class="text-2xs text-surface-600 uppercase tracking-wider font-medium">Dauer: {s.duration}</span>
+            </div>
+            <p class="text-xs text-surface-600 mb-4 leading-relaxed">{s.description}</p>
+            <div class="space-y-1.5">
+              <span class="text-2xs text-surface-600 font-semibold uppercase tracking-wider">Prioritäten</span>
+              {s.priorities.map((p, i) => (
+                <div class="flex items-start gap-2 text-sm" data-stagger>
+                  <span class="text-xs font-mono text-surface-600 mt-0.5 w-4">{i + 1}.</span>
+                  <span class="text-surface-700">{p}</span>
+                </div>
+              ))}
+            </div>
+          </BentoCard>
+        ))}
+      </div>
+      </div>
+      </details>
+    </section>
+
+    <!-- ===== SCHUTZRÄUME & BOMBEN ===== -->
+    <section class="py-3 sm:py-4 px-4 sm:px-6 max-w-7xl mx-auto">
+      <details class="section-card group">
+        <SectionHeader id="schutzraeume" title="Schutzräume & Bomben" subtitle="Sprengradien, Schutzräume, Fakten statt Panik." accent="red" collapsible />
+
+      <div class="section-content">
+      <!-- Nuklearwaffen Tabelle -->
+      <div class="mb-8" data-animate>
+        <h3 class="text-lg font-bold text-surface-950 mb-4">Nuklearwaffen — Sprengradien</h3>
+        <div class="overflow-x-auto">
+          <table class="w-full text-xs text-left">
+            <thead>
+              <tr class="bg-red-600/10 text-surface-900">
+                <th scope="col" class="px-3 py-2 font-semibold rounded-tl-lg">Typ</th>
+                <th scope="col" class="px-3 py-2 font-semibold">Sprengkraft</th>
+                <th scope="col" class="px-3 py-2 font-semibold">Feuerball</th>
+                <th scope="col" class="px-3 py-2 font-semibold">Totalzerstörung</th>
+                <th scope="col" class="px-3 py-2 font-semibold">Schwere Schäden</th>
+                <th scope="col" class="px-3 py-2 font-semibold">Verbrennungen</th>
+                <th scope="col" class="px-3 py-2 font-semibold rounded-tr-lg">Fallout-Zone</th>
+              </tr>
+            </thead>
+            <tbody>
+              {nuclearBombs.map((b, i) => (
+                <tr class={i % 2 === 0 ? 'bg-surface-100/50' : ''}>
+                  <td class="px-3 py-2 font-semibold text-surface-900">{b.name}</td>
+                  <td class="px-3 py-2 text-red-400 font-bold">{b.yield}</td>
+                  <td class="px-3 py-2 text-surface-600">{b.fireball}</td>
+                  <td class="px-3 py-2 text-surface-600">{b.totalDestruction}</td>
+                  <td class="px-3 py-2 text-surface-600">{b.severeBlast}</td>
+                  <td class="px-3 py-2 text-surface-600">{b.thermalBurn}</td>
+                  <td class="px-3 py-2 text-surface-600">{b.fallout}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Konventionelle Waffen -->
+      <div class="mb-8" data-animate>
+        <h3 class="text-lg font-bold text-surface-950 mb-4">Konventionelle Waffen — Sprengradien & sichere Entfernung</h3>
+        <div class="overflow-x-auto">
+          <table class="w-full text-xs text-left">
+            <thead>
+              <tr class="bg-amber-600/10 text-surface-900">
+                <th scope="col" class="px-3 py-2 font-semibold rounded-tl-lg">Waffe</th>
+                <th scope="col" class="px-3 py-2 font-semibold">Gewicht</th>
+                <th scope="col" class="px-3 py-2 font-semibold">Blast-Radius</th>
+                <th scope="col" class="px-3 py-2 font-semibold">Splitter-Radius</th>
+                <th scope="col" class="px-3 py-2 font-semibold">Sichere Entfernung</th>
+                <th scope="col" class="px-3 py-2 font-semibold rounded-tr-lg">Beschreibung</th>
+              </tr>
+            </thead>
+            <tbody>
+              {conventionalBombs.map((b, i) => (
+                <tr class={i % 2 === 0 ? 'bg-surface-100/50' : ''}>
+                  <td class="px-3 py-2 font-semibold text-surface-900">{b.name}</td>
+                  <td class="px-3 py-2 text-amber-400 font-bold">{b.weight}</td>
+                  <td class="px-3 py-2 text-surface-600">{b.blastRadius}</td>
+                  <td class="px-3 py-2 text-surface-600">{b.shrapnelRadius}</td>
+                  <td class="px-3 py-2 text-brand-400 font-semibold">{b.safeDistance}</td>
+                  <td class="px-3 py-2 text-surface-600 max-w-[200px]">{b.description}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Schutzräume -->
+      <div class="mb-8" data-animate>
+        <h3 class="text-lg font-bold text-surface-950 mb-4">Schutzräume — Wo findet man Schutz?</h3>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {shelterTypes.map((s) => (
+            <BentoCard>
+              <h4 class="font-bold text-surface-950 text-sm mb-1">{s.type}</h4>
+              <div class="flex items-center gap-2 mb-2">
+                <span class="badge badge-high text-2xs">{s.depth}</span>
+                <span class="text-2xs text-surface-600">{s.protection}</span>
+              </div>
+              <p class="text-2xs text-surface-600 mb-2"><strong>Wo:</strong> {s.where}</p>
+              <p class="text-xs text-surface-600 leading-relaxed">{s.notes}</p>
+            </BentoCard>
+          ))}
+        </div>
+      </div>
+
+      <!-- Abschirmmaterialien -->
+      <div class="mb-8" data-animate>
+        <h3 class="text-lg font-bold text-surface-950 mb-4">Abschirmung — Halbwertsschicht (Strahlung halbieren)</h3>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+          {shelterMaterials.map((m) => (
+            <div class="card p-4">
+              <span class="text-lg font-bold text-red-400">{m.halfValueLayer}</span>
+              <h4 class="text-sm font-semibold text-surface-900">{m.material}</h4>
+              <p class="text-2xs text-surface-600 mt-1">{m.description}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <!-- Fallout-Regeln -->
+      <div class="mb-8" data-animate>
+        <h3 class="text-lg font-bold text-surface-950 mb-4">Fallout-Regeln — Wie lange im Schutzraum bleiben?</h3>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+          {falloutRules.map((r) => (
+            <div class="card p-4">
+              <h4 class="text-sm font-bold text-amber-400 mb-1">{r.rule}</h4>
+              <p class="text-xs text-surface-600 leading-relaxed">{r.description}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <!-- Entfernungsrechner -->
+      <div class="card card-accent p-6 mt-6" data-animate>
+        <h3 class="text-lg font-bold text-surface-950 mb-2">Entfernungsrechner — Bin ich sicher?</h3>
+        <p class="text-xs text-surface-600 mb-4">Wähle einen Waffentyp und deine Entfernung zum Einschlag.</p>
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div>
+            <label for="blast-weapon" class="text-xs font-semibold text-surface-700 block mb-1">Waffentyp</label>
+            <select id="blast-weapon" class="w-full bg-surface-200 border border-surface-300 rounded-lg px-3 py-2 text-sm text-surface-900">
+              <option value="1">Taktisch (1 kt)</option>
+              <option value="10">Klein (10 kt)</option>
+              <option value="15">Hiroshima (15 kt)</option>
+              <option value="100">Mittel (100 kt)</option>
+              <option value="1000">Groß (1 Mt)</option>
+            </select>
+          </div>
+          <div>
+            <label for="blast-distance" class="text-xs font-semibold text-surface-700 block mb-1">Entfernung zum Einschlag (km)</label>
+            <input id="blast-distance" type="number" min="0" step="0.5" value="5" class="w-full bg-surface-200 border border-surface-300 rounded-lg px-3 py-2 text-sm text-surface-900" />
+          </div>
+          <div class="flex items-end">
+            <button id="blast-calc-btn" type="button" class="w-full px-4 py-2 bg-red-600 hover:bg-red-500 text-white rounded-lg text-sm font-semibold transition-colors cursor-pointer">Berechnen</button>
+          </div>
+        </div>
+        <div id="blast-result" class="mt-4 p-4 bg-surface-200/50 rounded-lg text-sm text-surface-700 hidden" aria-live="polite" aria-atomic="true" role="status"></div>
+      </div>
+      </div>
+      </details>
+    </section>
+
+    <!-- ===== OFFLINE-TECHNIK ===== -->
+    <section class="py-3 sm:py-4 px-4 sm:px-6 max-w-7xl mx-auto">
+      <details class="section-card group">
+        <SectionHeader id="offline-technik" title="Offline-Technik" subtitle="Apps die ohne Internet funktionieren." accent="violet" collapsible />
+
+      <div class="section-content">
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" data-animate>
+        {offlineApps.map((app) => (
+          <BentoCard>
+            <div class="flex items-start justify-between mb-2">
+              <h4 class="font-bold text-surface-950 text-sm">{app.name}</h4>
+              <span class={`badge ${app.priority === 'hoch' ? 'badge-high' : app.priority === 'mittel' ? 'badge-mid' : 'badge-low'}`}>{app.priority}</span>
+            </div>
+            <div class="flex items-center gap-2 mb-2">
+              <span class="text-2xs text-surface-600 font-medium">{app.platform}</span>
+              <span class="text-2xs text-surface-600">·</span>
+              <span class="text-2xs text-surface-600">{app.storage}</span>
+            </div>
+            <p class="text-xs text-surface-600 mb-3 leading-relaxed">{app.description}</p>
+            <div class="space-y-1">
+              <span class="text-2xs text-surface-600 font-semibold uppercase tracking-wider">Setup</span>
+              {app.setupSteps.map((step, i) => (
+                <div class="flex items-start gap-2 text-2xs text-surface-600" data-stagger>
+                  <span class="text-surface-600 font-mono w-3 flex-shrink-0">{i + 1}.</span>
+                  <span>{step}</span>
+                </div>
+              ))}
+            </div>
+          </BentoCard>
+        ))}
+      </div>
+
+      <!-- Speicher-Rechner -->
+      <div class="card card-accent p-6 mt-6" data-animate>
+        <h3 class="text-lg font-bold text-surface-950 mb-2">Speicher-Rechner — Was brauche ich?</h3>
+        <p class="text-xs text-surface-600 mb-4">Welche Tools willst du installieren? Wir berechnen den Speicherbedarf.</p>
+        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2" id="storage-checklist">
+          {[
+            { id: "s-wiki", label: "Wikipedia (deutsch)", size: 11 },
+            { id: "s-maps", label: "Offline-Karten DE", size: 1.5 },
+            { id: "s-llm-small", label: "KI-Modell (klein)", size: 2 },
+            { id: "s-llm-big", label: "KI-Modell (groß)", size: 8 },
+            { id: "s-erstehilfe", label: "Erste-Hilfe-App", size: 0.1 },
+            { id: "s-briar", label: "Briar Messenger", size: 0.05 },
+            { id: "s-translate", label: "Offline-Übersetzer", size: 0.3 },
+            { id: "s-pdfs", label: "Survival-PDFs", size: 0.01 },
+          ].map((item) => (
+            <label class="flex items-center gap-2 p-2 bg-surface-200/50 rounded-lg cursor-pointer hover:bg-surface-200 transition-colors">
+              <input type="checkbox" class="storage-check accent-brand-500" data-size={item.size} />
+              <span class="text-xs text-surface-700">{item.label}</span>
+              <span class="text-2xs text-surface-600 ml-auto">{item.size} GB</span>
+            </label>
+          ))}
+        </div>
+        <div id="storage-result" class="mt-4 p-3 bg-surface-200/50 rounded-lg text-sm font-semibold text-surface-900" aria-live="polite" aria-atomic="true" role="status">
+          Speicherbedarf: <span id="storage-total">0</span> GB — <span id="storage-advice">Wähle Tools oben aus</span>
+        </div>
+      </div>
+      </div>
+      </details>
+    </section>
+
+    <!-- ===== QUICK REFERENCE ===== -->
+    <section class="py-3 sm:py-4 px-4 sm:px-6 max-w-7xl mx-auto">
+      <details class="section-card group">
+        <SectionHeader id="cheatsheet" title="Schnellübersicht" subtitle="Das Wichtigste auf einen Blick." accent="brand" collapsible />
+
+      <div class="section-content">
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4" data-animate>
+        <BentoCard>
+          <h4 class="text-xs font-semibold text-blue-400 uppercase tracking-wider mb-4">Die 3er Regel</h4>
+          <div class="space-y-2">
+            {[
+              { time: "3 Min.", desc: "ohne Luft" },
+              { time: "3 Std.", desc: "ohne Schutz (Extremwetter)" },
+              { time: "3 Tage", desc: "ohne Wasser" },
+              { time: "3 Wochen", desc: "ohne Nahrung" },
+            ].map((r) => (
+              <div class="p-2.5 bg-surface-200/50 rounded-lg" data-stagger>
+                <span class="text-sm font-bold text-blue-400">{r.time}</span>
+                <span class="text-xs text-surface-600 ml-1.5">{r.desc}</span>
+              </div>
+            ))}
+          </div>
+        </BentoCard>
+
+        <BentoCard accent>
+          <h4 class="text-xs font-semibold text-brand-400 uppercase tracking-wider mb-3">Fluchtrucksack</h4>
+          <p class="text-2xs text-surface-600 mb-3">Immer gepackt an der Tuer</p>
+          <ul class="space-y-1.5 text-sm text-surface-700">
+            {["Dokumente (Kopien)", "Bargeld (200 EUR+)", "Wasser (1,5L / Person)", "NRG-5 / Riegel", "Taschenlampe", "Erste-Hilfe-Set", "Medikamente", "Powerbank + Kabel", "Warme Kleidung", "Regenschutz"].map((item) => (
+              <li class="flex items-center gap-2" data-stagger>
+                <svg class="w-3 h-3 text-brand-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+                {item}
+              </li>
+            ))}
+          </ul>
+        </BentoCard>
+
+        <BentoCard>
+          <h4 class="text-xs font-semibold text-amber-400 uppercase tracking-wider mb-4">Wichtige Nummern</h4>
+          <div class="space-y-2">
+            {[
+              { num: "112", desc: "Notruf (Feuerwehr/Rettung)" },
+              { num: "110", desc: "Polizei" },
+              { num: "116 117", desc: "Ärztl. Bereitschaft" },
+              { num: "0800 111 0 111", desc: "Telefonseelsorge" },
+            ].map((n) => (
+              <div class="p-2.5 bg-surface-200/50 rounded-lg" data-stagger>
+                <span class="text-sm font-bold font-mono text-amber-400">{n.num}</span>
+                <span class="text-xs text-surface-600 block mt-0.5">{n.desc}</span>
+              </div>
+            ))}
+          </div>
+        </BentoCard>
+
+        <BentoCard>
+          <h4 class="text-xs font-semibold text-brand-400 uppercase tracking-wider mb-3">Rotation</h4>
+          <p class="text-2xs text-surface-600 mb-3">Vorräte regelmäßig erneuern</p>
+          <div class="space-y-2">
+            {[
+              { period: "3 Mon.", items: "Müsliriegel, Nüsse", color: "bg-rose-500/15 text-rose-400" },
+              { period: "6 Mon.", items: "H-Milch, Batterien", color: "bg-amber-500/15 text-amber-400" },
+              { period: "1 Jahr", items: "Konserven prüfen", color: "bg-blue-500/15 text-blue-400" },
+              { period: "2 Jahre", items: "Wasser erneuern", color: "bg-brand-500/15 text-brand-400" },
+              { period: "Jährlich", items: "Medikamente checken", color: "bg-violet-500/15 text-violet-400" },
+            ].map((r) => (
+              <div class="flex items-center gap-2.5 text-sm" data-stagger>
+                <span class={`text-2xs font-semibold px-2 py-0.5 rounded ${r.color}`}>{r.period}</span>
+                <span class="text-surface-700">{r.items}</span>
+              </div>
+            ))}
+          </div>
+        </BentoCard>
+      </div>
+      </div>
+      </details>
+    </section>
+
+    <!-- ===== PDF DOWNLOADS - ALLE ===== -->
+    <section class="py-3 sm:py-4 px-4 sm:px-6 max-w-7xl mx-auto" id="downloads">
+      <details class="section-card group">
+        <SectionHeader id="pdf-downloads" title="Alle PDFs herunterladen" subtitle="DIN A4 zum Ausdrucken." accent="red" collapsible />
+
+      <div class="section-content">
+      <!-- Download ALL button -->
+      <div class="mb-8" data-animate>
+        <button data-pdf="all" class="pdf-dl group relative w-full sm:w-auto inline-flex items-center justify-center gap-3 px-8 py-4 rounded-2xl cursor-pointer bg-gradient-to-r from-red-600 to-red-500 hover:from-red-500 hover:to-red-400 text-white font-bold text-sm transition-all duration-300 hover:shadow-xl hover:shadow-red-600/20 active:scale-[0.98]">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12M12 16.5V3"/>
+          </svg>
+          <span class="pdf-label">Alle 11 PDFs herunterladen</span>
+          <span class="text-red-200 text-xs font-normal ml-1">DIN A4</span>
+        </button>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-3" data-animate>
+        <PdfButton pdfType="shop-0" label="Einkaufsliste 1 Person" sublabel="14 Tage Notvorrat" accent="brand" />
+        <PdfButton pdfType="shop-1" label="Einkaufsliste 2 Personen" sublabel="14 Tage Notvorrat" accent="brand" />
+        <PdfButton pdfType="shop-2" label="Einkaufsliste Familie" sublabel="2 Erw. + 3 Kinder" accent="brand" />
+        <PdfButton pdfType="food" label="Nahrungsmittel Tabelle" sublabel={`${foodItems.length} Artikel (mehrseitig)`} accent="amber" />
+        <PdfButton pdfType="water" label="Wasser Übersicht" sublabel="Bedarf & Aufbereitung" accent="blue" />
+        <PdfButton pdfType="firstaid" label="Erste-Hilfe" sublabel={`${firstAidKit.items.length} Artikel`} accent="rose" />
+        <PdfButton pdfType="emergency" label="Notfallplan" sublabel="10 Schritte" accent="red" />
+        <PdfButton pdfType="documents" label="Dokumente" sublabel={`${importantDocuments.length} Unterlagen`} accent="violet" />
+        <PdfButton pdfType="hygiene" label="Hygiene" sublabel={`${hygieneItems.length} Artikel`} accent="cyan" />
+        <PdfButton pdfType="equipment" label="Ausrüstung" sublabel="Komplette Liste" accent="amber" />
+        <PdfButton pdfType="children" label="Kinder" sublabel="Nach Altersgruppe" accent="pink" />
+      </div>
+
+      <p class="text-xs text-surface-600 mt-6 text-center">Alle PDFs sind mehrseitig wo nötig und sauber formatiert. Einfach drucken, lochen, abheften - fertig.</p>
+      </div>
+      </details>
+    </section>
+
+    <!-- ===== IMPRESSUM ===== -->
+    <section id="impressum" class="hidden py-16 sm:py-24 px-4 sm:px-6 max-w-3xl mx-auto legal-section">
+      <div class="flex items-center justify-between mb-8">
+        <h2 class="text-2xl font-bold text-surface-950">Impressum</h2>
+        <button type="button" class="legal-close tab" aria-label="Schließen">Schließen</button>
+      </div>
+      <div class="prose prose-sm text-surface-700 space-y-4">
+        <h3 class="text-lg font-semibold text-surface-900">Angaben gemäß &sect; 5 DDG</h3>
+        <p>
+          Belkis Aalani<br/>
+          Vogelsangstraße 32<br/>
+          71691 Freiberg am Neckar
+        </p>
+        <h3 class="text-lg font-semibold text-surface-900">Kontakt</h3>
+        <p>
+          E-Mail: belkis.aslani@gmail.com
+        </p>
+        <h3 class="text-lg font-semibold text-surface-900">Verantwortlich für den Inhalt nach &sect; 18 Abs. 2 MStV</h3>
+        <p>
+          Belkis Aalani<br/>
+          Vogelsangstraße 32<br/>
+          71691 Freiberg am Neckar
+        </p>
+        <h3 class="text-lg font-semibold text-surface-900">Haftungsausschluss</h3>
+        <p>
+          Die Inhalte dieser Webseite wurden mit größter Sorgfalt erstellt. Für die Richtigkeit, Vollständigkeit und
+          Aktualität der Inhalte kann jedoch keine Gewähr übernommen werden. Die Nutzung der Inhalte erfolgt auf eigene
+          Gefahr. Insbesondere die Angaben zu Haltbarkeiten und Nährwerten dienen als Richtwerte und können je nach Produkt
+          und Lagerung abweichen.
+        </p>
+        <h3 class="text-lg font-semibold text-surface-900">Urheberrecht</h3>
+        <p>
+          Die durch den Seitenbetreiber erstellten Inhalte und Werke auf dieser Webseite unterliegen dem deutschen Urheberrecht.
+          Die private Nutzung, insbesondere der Ausdruck der PDF-Checklisten, ist ausdrücklich erwünscht und erlaubt.
+        </p>
+        <h3 class="text-lg font-semibold text-surface-900">Quellenangaben</h3>
+        <p>
+          Nährwertdaten basieren auf dem Bundeslebensmittelschlüssel (BLS 4.0, Dezember 2025), herausgegeben vom Max Rubner-Institut (MRI).
+          Empfehlungen zur Krisenvorsorge orientieren sich an den Richtlinien des Bundesamts für Bevölkerungsschutz und
+          Katastrophenhilfe (BBK) sowie des Deutschen Roten Kreuzes (DRK).
+        </p>
+      </div>
+    </section>
+
+    <!-- ===== DATENSCHUTZ ===== -->
+    <section id="datenschutz" class="hidden py-16 sm:py-24 px-4 sm:px-6 max-w-3xl mx-auto legal-section">
+      <div class="flex items-center justify-between mb-8">
+        <h2 class="text-2xl font-bold text-surface-950">Datenschutzerklärung</h2>
+        <button type="button" class="legal-close tab" aria-label="Schließen">Schließen</button>
+      </div>
+      <div class="prose prose-sm text-surface-700 space-y-4">
+        <h3 class="text-lg font-semibold text-surface-900">1. Datenschutz auf einen Blick</h3>
+        <p>
+          Diese Webseite nimmt den Schutz Ihrer persönlichen Daten sehr ernst. Wir behandeln Ihre personenbezogenen Daten
+          vertraulich und entsprechend der gesetzlichen Datenschutzvorschriften sowie dieser Datenschutzerklärung.
+        </p>
+
+        <h3 class="text-lg font-semibold text-surface-900">2. Verantwortliche Stelle</h3>
+        <p>
+          Belkis Aalani<br/>
+          Vogelsangstraße 32<br/>
+          71691 Freiberg am Neckar<br/>
+          E-Mail: belkis.aslani@gmail.com
+        </p>
+
+        <h3 class="text-lg font-semibold text-surface-900">3. Datenerfassung auf dieser Webseite</h3>
+        <p>
+          <strong>Keine Cookies:</strong> Diese Webseite verwendet keine Cookies.<br/>
+          <strong>Keine Tracking-Tools:</strong> Es werden keine Analyse- oder Tracking-Tools (wie Google Analytics) eingesetzt.<br/>
+          <strong>Keine Registrierung:</strong> Es ist keine Registrierung oder Anmeldung erforderlich.<br/>
+          <strong>Keine Datenweitergabe:</strong> Es werden keine personenbezogenen Daten an Dritte weitergegeben.
+        </p>
+
+        <h3 class="text-lg font-semibold text-surface-900">4. Hosting</h3>
+        <p>
+          Diese Webseite wird extern gehostet. Die personenbezogenen Daten, die auf dieser Webseite erfasst werden
+          (z.B. IP-Adresse beim Seitenaufruf), werden auf den Servern des Hosters verarbeitet. Dies ist erforderlich,
+          um die Webseite auszuliefern (Art. 6 Abs. 1 lit. f DSGVO).
+        </p>
+
+        <h3 class="text-lg font-semibold text-surface-900">5. PDF-Generierung</h3>
+        <p>
+          Die PDF-Dateien werden vollständig in Ihrem Browser (clientseitig) erzeugt. Es werden dabei keine Daten
+          an einen Server übertragen. Die generierten PDFs verlassen zu keinem Zeitpunkt Ihr Gerät.
+        </p>
+
+        <h3 class="text-lg font-semibold text-surface-900">6. Externe Verbindungen</h3>
+        <p>
+          Diese Webseite lädt keine externen Schriftarten, Skripte oder Tracker nach. Es werden ausschließlich
+          System-Schriftarten verwendet, die bereits auf Ihrem Gerät installiert sind. Es findet keine
+          Verbindung zu Google, Facebook oder anderen Drittanbietern statt.
+        </p>
+
+        <h3 class="text-lg font-semibold text-surface-900">7. Ihre Rechte</h3>
+        <p>
+          Sie haben das Recht auf Auskunft, Berichtigung, Löschung und Einschränkung der Verarbeitung Ihrer
+          personenbezogenen Daten. Sie haben zudem das Recht, sich bei einer Aufsichtsbehörde zu beschweren.
+          Wenden Sie sich hierzu an: belkis.aslani@gmail.com
+        </p>
+
+        <h3 class="text-lg font-semibold text-surface-900">8. Aktualität</h3>
+        <p>
+          Diese Datenschutzerklärung ist aktuell gültig und hat den Stand März 2026.
+        </p>
+      </div>
+    </section>
+
+    <!-- ===== FOOTER ===== -->
+    <footer class="py-12 px-4 border-t border-surface-300/50">
+      <div class="max-w-7xl mx-auto text-center">
+        <div class="flex items-center justify-center gap-2 mb-3">
+          <img src="/WW3/icon-192x192.png" alt="WW3 Logo" class="w-6 h-6 rounded-md" />
+          <span class="text-sm font-semibold text-surface-800">WW3 Survival Guide</span>
+        </div>
+        <p class="text-xs text-surface-600 max-w-md mx-auto mb-4 leading-relaxed">
+          Lieber haben und nicht brauchen, als brauchen und nicht haben.
+          Alle Checklisten als PDF - drucken, abheften, fertig.
+        </p>
+        <div class="flex items-center justify-center gap-4 mb-4">
+          <button class="legal-link text-xs text-surface-600 hover:text-surface-800 underline underline-offset-2 transition-colors cursor-pointer" data-target="impressum">Impressum</button>
+          <span class="text-surface-400">·</span>
+          <button class="legal-link text-xs text-surface-600 hover:text-surface-800 underline underline-offset-2 transition-colors cursor-pointer" data-target="datenschutz">Datenschutz</button>
+        </div>
+        <div class="text-2xs text-surface-600">
+          Keine Gewähr auf Vollständigkeit  ·  Stand 2026
+        </div>
+      </div>
+    </footer>
+  </main>
+
+  <!-- Back to top -->
+  <button
+    id="btt"
+    class="fixed bottom-5 right-5 w-10 h-10 rounded-xl bg-surface-200 hover:bg-surface-300 border border-surface-300 text-surface-700 shadow-lg flex items-center justify-center transition-all z-50 no-print"
+    aria-label="Nach oben"
+  >
+    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" aria-hidden="true">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 10.5L12 3m0 0l7.5 7.5M12 3v18" />
+    </svg>
+  </button>
+
+  <!-- PDF Data -->
+  <script is:inline define:vars={{
+    pdfShoppingLists: shoppingLists,
+    pdfWaterNeeds: waterNeeds,
+    pdfWaterStorage: waterStorage,
+    pdfWaterPurification: waterPurification,
+    pdfFirstAidItems: firstAidKit.items,
+    pdfEmergencyPlan: emergencyPlan,
+    pdfDocuments: importantDocuments,
+    pdfHygieneItems: hygieneItems,
+    pdfToolsAndEquipment: toolsAndEquipment,
+    pdfChildrenSpecial: childrenSpecial,
+    pdfFoodItems: foodItems,
+  }}>
+    window.__pdfData = {
+      shoppingLists: pdfShoppingLists,
+      waterNeeds: pdfWaterNeeds,
+      waterStorage: pdfWaterStorage,
+      waterPurification: pdfWaterPurification,
+      firstAidItems: pdfFirstAidItems,
+      emergencyPlan: pdfEmergencyPlan,
+      documents: pdfDocuments,
+      hygieneItems: pdfHygieneItems,
+      toolsAndEquipment: pdfToolsAndEquipment,
+      childrenSpecial: pdfChildrenSpecial,
+      foodItems: pdfFoodItems,
+    };
+  </script>
+
+  <script>
+    let pdfModule: any = null;
+    let JSZipModule: any = null;
+
+    async function loadPdfDeps() {
+      if (!pdfModule) {
+        const [pdf, zip] = await Promise.all([
+          import('../lib/pdfGenerator'),
+          import('jszip'),
+        ]);
+        pdfModule = pdf;
+        JSZipModule = zip.default;
+      }
+    }
+
+    const data = (window as any).__pdfData;
+
+    function getPdf(type: string) {
+      const m = pdfModule;
+      switch (type) {
+        case 'shop-0': return { doc: m.generateShoppingListPdf(data.shoppingLists[0]), name: 'einkaufsliste-1-person.pdf' };
+        case 'shop-1': return { doc: m.generateShoppingListPdf(data.shoppingLists[1]), name: 'einkaufsliste-2-personen.pdf' };
+        case 'shop-2': return { doc: m.generateShoppingListPdf(data.shoppingLists[2]), name: 'einkaufsliste-familie.pdf' };
+        case 'water': return { doc: m.generateWaterPdf(data.waterNeeds, data.waterStorage, data.waterPurification), name: 'wasser-uebersicht.pdf' };
+        case 'firstaid': return { doc: m.generateFirstAidPdf(data.firstAidItems), name: 'erste-hilfe-checkliste.pdf' };
+        case 'emergency': return { doc: m.generateEmergencyPlanPdf(data.emergencyPlan), name: 'notfallplan-10-schritte.pdf' };
+        case 'documents': return { doc: m.generateDocumentsPdf(data.documents), name: 'dokumente-checkliste.pdf' };
+        case 'hygiene': return { doc: m.generateHygienePdf(data.hygieneItems), name: 'hygiene-checkliste.pdf' };
+        case 'equipment': return { doc: m.generateEquipmentPdf(data.toolsAndEquipment), name: 'ausruestung-werkzeuge.pdf' };
+        case 'children': return { doc: m.generateChildrenPdf(data.childrenSpecial), name: 'kinder-im-notfall.pdf' };
+        case 'food': return { doc: m.generateFoodPdf(data.foodItems), name: 'nahrungsmittel-tabelle.pdf' };
+        default: return null;
+      }
+    }
+
+    const allTypes = ['shop-0','shop-1','shop-2','water','food','firstaid','emergency','documents','hygiene','equipment','children'];
+
+    async function animateDownload(btn: Element, type: string) {
+      const label = btn.querySelector('.pdf-label');
+      const origText = label?.textContent || '';
+      const el = btn as HTMLElement;
+
+      let bar = el.querySelector('.dl-progress') as HTMLElement;
+      if (!bar) {
+        bar = document.createElement('div');
+        bar.className = 'dl-progress';
+        el.appendChild(bar);
+      }
+
+      el.classList.add('is-downloading');
+      bar.style.width = '0%';
+      if (label) label.textContent = 'Laden...';
+
+      await loadPdfDeps();
+
+      if (type === 'all') {
+        const total = allTypes.length;
+        if (label) label.textContent = `0 / ${total} PDFs ...`;
+
+        const zip = new JSZipModule();
+        for (let i = 0; i < allTypes.length; i++) {
+          const result = getPdf(allTypes[i]);
+          if (result) {
+            const blob = result.doc.output('blob');
+            zip.file(result.name, blob);
+          }
+          bar.style.width = `${((i + 1) / total) * 100}%`;
+          if (label) label.textContent = `${i + 1} / ${total} PDFs ...`;
+        }
+
+        zip.generateAsync({ type: 'blob' }).then((content: Blob) => {
+          const url = URL.createObjectURL(content);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = 'ww3-survival-alle-pdfs.zip';
+          a.click();
+          URL.revokeObjectURL(url);
+
+          setTimeout(() => {
+            el.classList.remove('is-downloading');
+            el.classList.add('is-done');
+            if (label) label.textContent = 'ZIP heruntergeladen!';
+            setTimeout(() => {
+              el.classList.remove('is-done');
+              if (label) label.textContent = origText;
+              bar.style.width = '0%';
+            }, 2000);
+          }, 300);
+        });
+      } else {
+        bar.style.width = '60%';
+        setTimeout(() => {
+          const result = getPdf(type);
+          if (result) pdfModule.downloadPdf(result.doc, result.name);
+          bar.style.width = '100%';
+          setTimeout(() => {
+            el.classList.remove('is-downloading');
+            el.classList.add('is-done');
+            if (label) label.textContent = 'Heruntergeladen!';
+            setTimeout(() => {
+              el.classList.remove('is-done');
+              if (label) label.textContent = origText;
+              bar.style.width = '0%';
+            }, 1500);
+          }, 300);
+        }, 200);
+      }
+    }
+
+    document.querySelectorAll('.pdf-dl').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        if ((btn as HTMLElement).classList.contains('is-downloading')) return;
+        animateDownload(btn, (btn as HTMLElement).dataset.pdf!);
+      });
+    });
+
+    // === LOCALSTORAGE PERSISTENCE ===
+    const calcInputIds = ['water-adults', 'water-kids', 'water-days', 'cal-persons', 'cal-daily', 'cal-days', 'blast-distance'];
+    calcInputIds.forEach(id => {
+      const el = document.getElementById(id) as HTMLInputElement;
+      if (!el) return;
+      const saved = localStorage.getItem('ww3-' + id);
+      if (saved) el.value = saved;
+      el.addEventListener('change', () => localStorage.setItem('ww3-' + id, el.value));
+    });
+    const blastSelect = document.getElementById('blast-weapon') as HTMLSelectElement;
+    if (blastSelect) {
+      const saved = localStorage.getItem('ww3-blast-weapon');
+      if (saved) blastSelect.value = saved;
+      blastSelect.addEventListener('change', () => localStorage.setItem('ww3-blast-weapon', blastSelect.value));
+    }
+
+    // === FOOD TABLE LAZY LOAD ===
+    document.getElementById('food-show-all')?.addEventListener('click', () => {
+      document.querySelectorAll('.food-hidden-row').forEach(r => r.classList.remove('hidden', 'food-hidden-row'));
+      document.getElementById('food-show-all-wrap')?.remove();
+    });
+
+    // === WASSERRECHNER ===
+    document.getElementById('water-calc-btn')?.addEventListener('click', () => {
+      const adults = parseInt((document.getElementById('water-adults') as HTMLInputElement).value) || 0;
+      const kids = parseInt((document.getElementById('water-kids') as HTMLInputElement).value) || 0;
+      const days = parseInt((document.getElementById('water-days') as HTMLInputElement).value) || 1;
+      const adultLiters = adults * 2.5 * days;
+      const kidLiters = kids * 1.5 * days;
+      const total = adultLiters + kidLiters;
+      const bottles6 = Math.ceil(total / 6);
+      const el = document.getElementById('water-result')!;
+      el.classList.remove('hidden');
+      el.innerHTML = `<strong class="text-blue-400 text-lg">${total} Liter</strong> Wasser benötigt.<br>
+        <span class="text-surface-600">${adults} Erw. × 2,5L × ${days} Tage = ${adultLiters}L</span><br>
+        <span class="text-surface-600">${kids} Kinder × 1,5L × ${days} Tage = ${kidLiters}L</span><br>
+        <span class="text-surface-600 mt-1 block">≈ ${bottles6} Sixpacks (6×1,5L) oder ${Math.ceil(total / 10)} 10L-Kanister</span>`;
+    });
+
+    // === KALORIENRECHNER ===
+    document.getElementById('cal-calc-btn')?.addEventListener('click', () => {
+      const persons = parseInt((document.getElementById('cal-persons') as HTMLInputElement).value) || 1;
+      const daily = parseInt((document.getElementById('cal-daily') as HTMLInputElement).value) || 2000;
+      const days = parseInt((document.getElementById('cal-days') as HTMLInputElement).value) || 14;
+      const totalKcal = persons * daily * days;
+      const riceKg = (totalKcal / 3600).toFixed(1);
+      const nrgPacks = Math.ceil(totalKcal / 2300);
+      const el = document.getElementById('cal-result')!;
+      el.classList.remove('hidden');
+      el.innerHTML = `<strong class="text-amber-400 text-lg">${totalKcal.toLocaleString('de-DE')} kcal</strong> Gesamtbedarf.<br>
+        <span class="text-surface-600">${persons} Personen × ${daily} kcal × ${days} Tage</span><br>
+        <span class="text-surface-600 mt-1 block">Entspricht ca. <strong>${riceKg} kg Reis</strong> oder <strong>${nrgPacks} NRG-5 Packungen</strong></span>`;
+    });
+
+    // === BLAST-RECHNER ===
+    document.getElementById('blast-calc-btn')?.addEventListener('click', () => {
+      const yieldKt = parseFloat((document.getElementById('blast-weapon') as HTMLSelectElement).value);
+      const distKm = parseFloat((document.getElementById('blast-distance') as HTMLInputElement).value) || 0;
+      const distM = distKm * 1000;
+
+      // Cube-root scaling from 1kt reference values
+      const scale = Math.pow(yieldKt, 1/3);
+      const fireball = 50 * scale;
+      const totalDest = 200 * scale;
+      const severe = 600 * scale;
+      const moderate = 1200 * scale;
+      const thermal = 1000 * scale;
+
+      let status = '';
+      let color = '';
+      if (distM < fireball) {
+        status = 'Im Feuerball. Keine Überlebenschance.';
+        color = 'text-red-500';
+      } else if (distM < totalDest) {
+        status = 'Zone der Totalzerstörung. Überlebenschance nahezu null.';
+        color = 'text-red-500';
+      } else if (distM < severe) {
+        status = 'Schwere Schäden. Gebäude stürzen ein. Überleben nur in tiefem Schutzraum möglich.';
+        color = 'text-red-400';
+      } else if (distM < moderate) {
+        status = 'Mittlere Schäden. Fenster bersten, Verletzungsgefahr. Schutzraum dringend empfohlen.';
+        color = 'text-amber-400';
+      } else if (distM < thermal) {
+        status = 'Thermische Strahlung möglich. Verbrennungen im Freien. Im Gebäude bleiben!';
+        color = 'text-amber-400';
+      } else {
+        status = 'Außerhalb der unmittelbaren Gefahrenzone. ABER: Fallout kann noch gefährlich sein! Schutzraum aufsuchen.';
+        color = 'text-brand-400';
+      }
+
+      const el = document.getElementById('blast-result')!;
+      el.classList.remove('hidden');
+      el.innerHTML = `<strong class="${color} text-lg">${status}</strong><br>
+        <span class="text-surface-600 mt-2 block">Bei ${yieldKt >= 1000 ? (yieldKt/1000) + ' Mt' : yieldKt + ' kt'} in ${distKm} km Entfernung:</span>
+        <span class="text-surface-600">Feuerball: ${(fireball/1000).toFixed(1)} km | Totalzerstörung: ${(totalDest/1000).toFixed(1)} km | Schwere Schäden: ${(severe/1000).toFixed(1)} km</span>`;
+    });
+
+    // === SPEICHER-RECHNER ===
+    function updateStorage() {
+      let total = 0;
+      document.querySelectorAll('.storage-check').forEach((cb) => {
+        if ((cb as HTMLInputElement).checked) {
+          total += parseFloat((cb as HTMLElement).dataset.size || '0');
+        }
+      });
+      document.getElementById('storage-total')!.textContent = total.toFixed(1);
+      const advice = document.getElementById('storage-advice')!;
+      if (total === 0) advice.textContent = 'Wähle Tools oben aus';
+      else if (total < 5) advice.textContent = 'Passt auf jedes Smartphone';
+      else if (total < 20) advice.textContent = 'Eine 32 GB SD-Karte reicht';
+      else if (total < 50) advice.textContent = 'Eine 64 GB SD-Karte empfohlen';
+      else advice.textContent = 'Eine 128 GB SD-Karte empfohlen';
+    }
+    document.querySelectorAll('.storage-check').forEach(cb => cb.addEventListener('change', updateStorage));
+  </script>
+</Layout>

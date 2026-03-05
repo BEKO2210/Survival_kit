@@ -1,0 +1,87 @@
+---
+const navItems = [
+  { href: "#wasser", label: "Wasser" },
+  { href: "#nahrung", label: "Nahrung" },
+  { href: "#einkaufslisten", label: "Listen" },
+  { href: "#erste-hilfe", label: "Erste Hilfe" },
+  { href: "#ausruestung", label: "Ausrüstung" },
+  { href: "#hygiene", label: "Hygiene" },
+  { href: "#kinder", label: "Kinder" },
+  { href: "#dokumente", label: "Dokumente" },
+  { href: "#notfallplan", label: "Notfallplan" },
+  { href: "#szenarien", label: "Szenarien" },
+  { href: "#schutzraeume", label: "Schutz" },
+  { href: "#offline-technik", label: "Technik" },
+  { href: "#downloads", label: "Downloads" },
+];
+---
+
+<nav class="fixed top-0 left-0 right-0 z-50 no-print">
+  <div class="bg-surface-0/80 backdrop-blur-xl border-b border-surface-300/50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between h-14 sm:h-16">
+        <!-- Logo -->
+        <a href="#start" class="flex items-center gap-2.5 group">
+          <img src="/WW3/icon-192x192.png" alt="WW3 Logo" class="w-8 h-8 rounded-lg transition-transform group-hover:scale-105" />
+          <span class="text-sm font-semibold tracking-tight">
+            <span class="text-red-400">WW3</span><span class="text-surface-600 font-normal ml-1">Survival</span>
+          </span>
+        </a>
+
+        <!-- Desktop Nav -->
+        <div class="hidden lg:flex items-center gap-0.5">
+          {navItems.map((item) => (
+            <a
+              href={item.href}
+              class="px-3 py-1.5 rounded-md text-xs font-medium text-surface-600 hover:text-surface-900 hover:bg-surface-200/60 transition-colors"
+            >
+              {item.label}
+            </a>
+          ))}
+        </div>
+
+        <!-- Search Button -->
+        <button
+          id="search-toggle"
+          type="button"
+          class="p-2 rounded-lg text-surface-600 hover:text-surface-900 hover:bg-surface-200/60 transition-colors"
+          aria-label="Suche öffnen"
+        >
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
+          </svg>
+        </button>
+
+        <!-- Mobile Menu Button -->
+        <button
+          id="menu-toggle"
+          class="lg:hidden p-2 -mr-2 rounded-lg text-surface-600 hover:text-surface-900 hover:bg-surface-200/60 transition-colors"
+          aria-label="Menu"
+          aria-expanded="false"
+          aria-controls="mobile-menu"
+        >
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+          </svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Mobile Menu -->
+  <div
+    id="mobile-menu"
+    class="hidden lg:hidden bg-surface-50/98 backdrop-blur-xl border-b border-surface-300/50"
+  >
+    <div class="px-4 py-3 space-y-0.5 max-h-[70vh] overflow-y-auto">
+      {navItems.map((item) => (
+        <a
+          href={item.href}
+          class="block px-3 py-2.5 rounded-lg text-sm text-surface-700 hover:text-brand-400 hover:bg-surface-200/60 transition-colors"
+        >
+          {item.label}
+        </a>
+      ))}
+    </div>
+  </div>
+</nav>
