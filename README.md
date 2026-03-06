@@ -65,7 +65,7 @@ npm run build
 ## Warum diese App?
 
 - **Keine Werbung** – 100% kostenlos und open source
-- ![DSGVO](https://img.shields.io) **Datenschutz** – Keine Daten werden gesendet oder gespeichert !
+- ![Datenschutz](https://img.shields.io) **Datenschutz** – Keine Daten werden gesendet oder gespeichert !
 - **Offline-First** – Funktioniert auch bei Stromausfall oder Netzproblemen
 - **Kompakt** – Alle wichtigen Infos an einem Ort
 
