@@ -77,11 +77,6 @@ Diese App ersetzt keine professionelle Beratung durch Behörden (BBK, DRK, etc.)
 MIT – Frei nutzbar und modifizierbar.
 
 ---
-## Star History
-
-## Star History
-
-[![Star History Chart](https://api.star-history.com/image?repos=BEKO2210/Survival_kit&type=timeline&logscale&legend=top-left)](https:&type=timeline&logscale&legend=top-left)](https://www.star-history.com/?repos=BEKO2210%2FSurvival_kit%26type%3Dtimeline%26logscale%26legend%3Dtop-left%29%5D%28https%3A&type=timeline&logscale=&legend=top-left)
 
 ## Star History
 
