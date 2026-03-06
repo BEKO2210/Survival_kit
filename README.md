@@ -83,4 +83,18 @@ MIT – Frei nutzbar und modifizierbar.
 
 [![Star History Chart](https://api.star-history.com/image?repos=BEKO2210/Survival_kit&type=timeline&logscale&legend=top-left)](https:&type=timeline&logscale&legend=top-left)](https://www.star-history.com/?repos=BEKO2210%2FSurvival_kit%26type%3Dtimeline%26logscale%26legend%3Dtop-left%29%5D%28https%3A&type=timeline&logscale=&legend=top-left)
 
+## Star History
+
+<p align="center">
+  <a href="https://star-history.com/#BEKO2210/Survival_kit&Date">
+    <picture>
+      <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=BEKO2210/Survival_kit&type=Date&theme=dark" />
+      <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=BEKO2210/Survival_kit&type=Date" />
+      <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=BEKO2210/Survival_kit&type=Date" width="800" />
+    </picture>
+  </a>
+</p>
+
+---
+
 Wenn dir die App hilft, gib dem Repo einen ⭐!
