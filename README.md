@@ -6,6 +6,7 @@
 ![PWA](https://img.shields.io/badge/PWA-Ready-5A0FC8?logo=pwa&logoColor=white)
 
 > Dein kompletter digitaler Ratgeber für Notfallvorsorge und Krisenvorsorge – funktioniert auch offline.
+**Live:** https://beko2210.github.io/Survival_kit/
 
 ## Was ist das?
 
@@ -16,9 +17,9 @@
 ## Funktionen
 
 - **📱 PWA (Progressive Web App)** – Installierbar auf Android & iOS
-- **🔌 Offline-fähig** – Alle Daten lokal verfügbar, kein Internet nötig
-- **📄 PDF-Export** – Checklisten und Listen als PDF herunterladen
-- **🍎 Lebensmittel-Haltbarkeiten** – Übersicht über Haltbarkeit von Notvorräten
+- **🔌 Offline-fähig** – Alle Daten lokal verfügbar, kein Internet nötig (inkl. PDF's)
+- **📄 PDF-Export** – Checklisten und Listen als PDF herunterladen (Offline - Da die PDF Datein auf dem Gerät generiert werden)
+- **🍎 Lebensmittel-Haltbarkeiten** – Übersicht über Haltbarkeit von Notvorräten (Detailansicht in PDF)
 - **✅ Checklisten** – Einkaufslisten für verschiedene Szenarien
 - **⚡ Energie & Wasser** – Tipps zur autarken Versorgung
 - **📡 Kommunikation** – Notfallkommunikation ohne Strom
