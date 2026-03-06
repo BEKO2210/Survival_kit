@@ -14,13 +14,13 @@ const { title, description = "Dein kompletter Ratgeber zur Notfallvorsorge. Eink
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content={description} />
     <meta name="generator" content={Astro.generator} />
-    <link rel="icon" type="image/png" href="/WW3/icon-192x192.png" />
-    <link rel="apple-touch-icon" href="/WW3/apple-touch-icon.png" />
-    <link rel="manifest" href="/WW3/manifest.json" />
+    <link rel="icon" type="image/png" href="/Survival_kit/icon-192x192.png" />
+    <link rel="apple-touch-icon" href="/Survival_kit/apple-touch-icon.png" />
+    <link rel="manifest" href="/Survival_kit/manifest.json" />
     <meta name="theme-color" content="#0d8b4f" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-    <meta name="apple-mobile-web-app-title" content="WW3 Survival" />
+    <meta name="apple-mobile-web-app-title" content="Survival Kit" />
     <title>{title}</title>
   </head>
   <body class="bg-surface-0 text-surface-900 font-sans antialiased overflow-x-hidden selection:bg-brand-500/30 selection:text-brand-200">
@@ -35,7 +35,7 @@ const { title, description = "Dein kompletter Ratgeber zur Notfallvorsorge. Eink
     <div id="update-banner" class="hidden fixed bottom-20 left-4 right-4 sm:left-auto sm:right-5 sm:w-96 z-[70] rounded-2xl shadow-2xl shadow-black/40 overflow-hidden update-popup">
       <div class="bg-surface-100 border border-surface-300 rounded-2xl">
         <div class="flex items-start gap-3.5 p-4">
-          <img src="/WW3/icon-192x192.png" alt="WW3" class="w-12 h-12 rounded-xl flex-shrink-0 shadow-md" />
+          <img src="/Survival_kit/icon-192x192.png" alt="WW3" class="w-12 h-12 rounded-xl flex-shrink-0 shadow-md" />
           <div class="flex-1 min-w-0">
             <div class="flex items-center gap-2 mb-0.5">
               <span class="text-sm font-bold text-surface-950">WW3 Survival Guide</span>
@@ -236,7 +236,7 @@ const { title, description = "Dein kompletter Ratgeber zur Notfallvorsorge. Eink
 
       // Register Service Worker for offline support
       if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.register('/WW3/sw.js').catch(() => {});
+        navigator.serviceWorker.register('/Survival_kit/sw.js').catch(() => {});
         navigator.serviceWorker.addEventListener('message', (event) => {
           if (event.data?.type === 'SW_UPDATED') {
             const banner = document.getElementById('update-banner');

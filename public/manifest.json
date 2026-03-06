@@ -1,22 +1,22 @@
 {
-  "name": "WW3 Survival Guide – Notfallvorsorge",
-  "short_name": "WW3 Survival",
+  "name": "Survival Kit – Notfallvorsorge",
+  "short_name": "Survival Kit",
   "description": "Dein kompletter Ratgeber zur Notfallvorsorge. Einkaufslisten, Haltbarkeiten, Checklisten.",
-  "start_url": "/WW3/",
-  "scope": "/WW3/",
+  "start_url": "/Survival_kit/",
+  "scope": "/Survival_kit/",
   "display": "standalone",
   "background_color": "#09090b",
   "theme_color": "#0d8b4f",
   "orientation": "portrait-primary",
   "icons": [
     {
-      "src": "/WW3/icon-192x192.png",
+      "src": "/Survival_kit/icon-192x192.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any maskable"
     },
     {
-      "src": "/WW3/icon-512x512.png",
+      "src": "/Survival_kit/icon-512x512.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"
