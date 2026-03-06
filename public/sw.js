@@ -1,7 +1,7 @@
 // Version wird beim Build automatisch ersetzt (Format: YYYY-MM-DD_HH-MM)
-const CACHE_VERSION = '__BUILD_VERSION__';
-const CACHE_NAME = 'ww3-survival-' + CACHE_VERSION;
-const BASE = '/WW3/';
+const CACHE_VERSION = '2026-03-06_v1';
+const CACHE_NAME = 'survival-kit-' + CACHE_VERSION;
+const BASE = '/Survival_kit/';
 
 // Core assets to pre-cache on install
 const PRECACHE_URLS = [

@@ -191,7 +191,13 @@ const { title, description = "Dein kompletter Ratgeber zur Notfallvorsorge. Eink
             if (matches.length === 0) {
               searchResults.innerHTML = '<p class="text-sm text-surface-600">Keine Ergebnisse gefunden.</p>';
             } else {
-              searchResults.innerHTML = matches.map(m => `<a href="${m.href}" class="block p-3 rounded-lg bg-surface-100 hover:bg-surface-200 border border-surface-300/50 transition-colors search-result-link"><div class="text-sm text-surface-900">${m.text.substring(0, 120)}${m.text.length > 120 ? '...' : ''}</div><div class="text-2xs text-surface-600 mt-1">${m.section}</div></a>`).join('');
+              // XSS-Schutz: HTML escapen
+              const escapeHtml = (text) => text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+              searchResults.innerHTML = matches.map(m => {
+                const safeText = escapeHtml(m.text.substring(0, 120)) + (m.text.length > 120 ? '...' : '');
+                const safeSection = escapeHtml(m.section);
+                return `<a href="${m.href}" class="block p-3 rounded-lg bg-surface-100 hover:bg-surface-200 border border-surface-300/50 transition-colors search-result-link"><div class="text-sm text-surface-900">${safeText}</div><div class="text-2xs text-surface-600 mt-1">${safeSection}</div></a>`;
+              }).join('');
               searchResults.querySelectorAll('.search-result-link').forEach(link => {
                 link.addEventListener('click', () => closeSearch());
               });
@@ -485,7 +491,7 @@ const { title, description = "Dein kompletter Ratgeber zur Notfallvorsorge. Eink
         .card::before { display: none; }
         section { break-before: auto; page-break-inside: avoid; }
         details { display: block !important; }
-        details:not([open]) { open: true; }
+        details:not([open]) { display: block !important; }
         details > summary { display: none !important; }
         .section-content { display: block !important; padding: 0.5rem !important; }
         table { border-collapse: collapse; }
