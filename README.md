@@ -10,7 +10,7 @@
 
 ## Was ist das?
 
-**Survival Kit** ist eine Progressive Web App (PWA) die dir hilft, dich auf Notfälle und Krisen vorzubereiten. Von Lebensmittel-Haltbarkeiten über Ausrüstungs-Checklisten bis hin zu Informationen über Wasserversorgung, Energie und Notfallkommunikation.
+**Survival Kit** ist eine Progressive Web App (PWA) die dir hilft, dich auf Notfälle und Krisen vorzubereiten. Von Lebensmittel Haltbarkeiten über Ausrüstungs Checklisten bis hin zu Informationen über Wasserversorgung, Energie und Notfallkommunikation.
 
 **Besonderheit:** Die App funktioniert komplett offline. Einmal geladen, hast du alle Informationen auch ohne Internetverbindung verfügbar.
 
@@ -65,7 +65,7 @@ npm run build
 ## Warum diese App?
 
 - **Keine Werbung** – 100% kostenlos und open source
-- **Datenschutz** – Keine Daten werden gesendet oder gespeichert
+- **Datenschutz** – Keine Daten werden gesendet oder gespeichert ![Datenschutz](https://img.shields.io)
 - **Offline-First** – Funktioniert auch bei Stromausfall oder Netzproblemen
 - **Kompakt** – Alle wichtigen Infos an einem Ort
 
