@@ -4,5 +4,5 @@ import tailwind from '@astrojs/tailwind';
 export default defineConfig({
   integrations: [tailwind()],
   site: 'https://BEKO2210.github.io',
-  base: '/WW3',
+  base: '/Survival_kit',
 });
