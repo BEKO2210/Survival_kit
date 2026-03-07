@@ -1,5 +1,5 @@
-// Version wird beim Build automatisch ersetzt (Format: Build-Nummer)
-const CACHE_VERSION = '__BUILD_VERSION__';
+// Service Worker for Be PREPared PWA
+const CACHE_VERSION = 'v2';
 const CACHE_NAME = 'survival-kit-' + CACHE_VERSION;
 const BASE = '/Survival_kit/';
 
@@ -11,6 +11,8 @@ const PRECACHE_URLS = [
   BASE + 'icon-512x512.png',
   BASE + 'favicon.svg',
   BASE + 'apple-touch-icon.png',
+  BASE + 'screenshot-wide.png',
+  BASE + 'screenshot-narrow.png',
 ];
 
 // Install: pre-cache core assets
@@ -74,6 +76,44 @@ self.addEventListener('fetch', (event) => {
         }
         return response;
       });
+    })
+  );
+});
+
+// Periodic sync for background updates
+self.addEventListener('periodicsync', (event) => {
+  if (event.tag === 'update-cache') {
+    event.waitUntil(
+      caches.open(CACHE_NAME).then((cache) => {
+        return cache.addAll(PRECACHE_URLS);
+      })
+    );
+  }
+});
+
+// Push notification support
+self.addEventListener('push', (event) => {
+  if (event.data) {
+    const data = event.data.json();
+    event.waitUntil(
+      self.registration.showNotification(data.title || 'Be PREPared', {
+        body: data.body || 'Neue Updates verfügbar',
+        icon: BASE + 'icon-192x192.png',
+        badge: BASE + 'icon-192x192.png',
+      })
+    );
+  }
+});
+
+// Notification click handler
+self.addEventListener('notificationclick', (event) => {
+  event.notification.close();
+  event.waitUntil(
+    self.clients.matchAll({ type: 'window' }).then((clients) => {
+      if (clients.length > 0) {
+        return clients[0].focus();
+      }
+      return self.clients.openWindow(BASE);
     })
   );
 });
