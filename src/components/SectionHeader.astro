@@ -1,0 +1,66 @@
+---
+interface Props {
+  id: string;
+  title: string;
+  subtitle?: string;
+  accent?: string;
+  collapsible?: boolean;
+}
+
+const { id, title, subtitle, accent = "brand", collapsible = false } = Astro.props;
+
+const accentColors: Record<string, string> = {
+  brand: "bg-brand-500",
+  blue: "bg-blue-500",
+  amber: "bg-amber-500",
+  rose: "bg-rose-500",
+  cyan: "bg-cyan-500",
+  violet: "bg-violet-500",
+  pink: "bg-pink-500",
+  orange: "bg-orange-500",
+  red: "bg-red-500",
+};
+
+const accentText: Record<string, string> = {
+  brand: "text-brand-400",
+  blue: "text-blue-400",
+  amber: "text-amber-400",
+  rose: "text-rose-400",
+  cyan: "text-cyan-400",
+  violet: "text-violet-400",
+  pink: "text-pink-400",
+  orange: "text-orange-400",
+  red: "text-red-400",
+};
+---
+
+{collapsible ? (
+  <summary class="section-summary cursor-pointer list-none select-none group/hdr" data-animate>
+    <div id={id} class="scroll-mt-20">
+      <div class="flex items-center gap-3">
+        <div class={`w-1 h-8 rounded-full ${accentColors[accent] || accentColors.brand} transition-all group-open:h-10`}></div>
+        <h2 class="text-xl sm:text-2xl lg:text-3xl font-bold text-surface-950 tracking-tight flex-1">
+          {title}
+        </h2>
+        <div class={`flex items-center gap-2 ${accentText[accent] || accentText.brand}`}>
+          <span class="text-xs font-medium text-surface-600 hidden sm:inline group-open:hidden">Anzeigen</span>
+          <span class="text-xs font-medium text-surface-600 hidden sm:hidden group-open:sm:inline">Einklappen</span>
+          <svg class="w-5 h-5 transition-transform duration-300 group-open:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+          </svg>
+        </div>
+      </div>
+      {subtitle && <p class="text-surface-700 text-sm sm:text-base ml-4 max-w-2xl leading-relaxed mt-1">{subtitle}</p>}
+    </div>
+  </summary>
+) : (
+  <div id={id} class="scroll-mt-20 mb-6" data-animate>
+    <div class="flex items-center gap-3 mb-2">
+      <div class={`w-1 h-8 rounded-full ${accentColors[accent] || accentColors.brand}`}></div>
+      <h2 class="text-xl sm:text-2xl lg:text-3xl font-bold text-surface-950 tracking-tight">
+        {title}
+      </h2>
+    </div>
+    {subtitle && <p class="text-surface-700 text-sm sm:text-base ml-4 max-w-2xl leading-relaxed">{subtitle}</p>}
+  </div>
+)}
