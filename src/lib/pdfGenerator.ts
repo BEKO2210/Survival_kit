@@ -1,5 +1,5 @@
 // =============================================================
-// WW3 SURVIVAL GUIDE - PDF Generator v4
+// Be PREPared SURVIVAL GUIDE - PDF Generator v4
 // Hochformat (Portrait), perfekt formatiert, kein Überlappen
 // =============================================================
 import { jsPDF } from 'jspdf';
@@ -60,7 +60,7 @@ function drawHeader(doc: jsPDF, title: string, sub: string, color: RGB): number 
   doc.setTextColor(...color);
   doc.setFontSize(7);
   doc.setFont('helvetica', 'bold');
-  doc.text('WW3', PW - M - 7, 9, { align: 'center' });
+  doc.text('PREP', PW - M - 7, 9, { align: 'center' });
 
   return 26;
 }
@@ -75,7 +75,7 @@ function drawFooter(doc: jsPDF) {
     doc.line(M, fy, PW - M, fy);
     doc.setFontSize(6);
     doc.setTextColor(...LIGHT);
-    doc.text('WW3 Survival Guide  ·  Nährwerte: BLS 4.0 (MRI)  ·  Vorsorge: BBK/DRK', M, fy + 4);
+    doc.text('Be PREPared Survival Guide  ·  Nährwerte: BLS 4.0 (MRI)  ·  Vorsorge: BBK/DRK', M, fy + 4);
     const pg = pages > 1 ? `Seite ${i} / ${pages}` : '';
     doc.text(pg, PW / 2, fy + 4, { align: 'center' });
     doc.text('Keine Gewähr  ·  Stand 2026', PW - M, fy + 4, { align: 'right' });

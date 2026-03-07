@@ -998,7 +998,7 @@ export const offlineApps: OfflineApp[] = [
   {
     name: "Survival-Guide PDFs",
     platform: "Alle Geräte",
-    description: "Diese WW3 Survival Guide PDFs auf allen Geräten speichern. Ausdrucken und zusätzlich digital aufbewahren.",
+    description: "Diese Be PREPared Survival Guide PDFs auf allen Geräten speichern. Ausdrucken und zusätzlich digital aufbewahren.",
     storage: "~10 MB für alle PDFs",
     setupSteps: [
       "Alle PDFs dieser Seite herunterladen (ZIP-Button)",
