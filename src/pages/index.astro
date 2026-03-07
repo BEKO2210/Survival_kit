@@ -1000,6 +1000,27 @@ function badgeClass(p: string) {
           Lieber haben und nicht brauchen, als brauchen und nicht haben.
           Alle Checklisten als PDF - drucken, abheften, fertig.
         </p>
+
+        <!-- App Download & Install -->
+        <div class="flex flex-col sm:flex-row items-center justify-center gap-3 mb-5">
+          <!-- APK Download -->
+          <a href="/Survival_kit/BePREPared-1.apk" download="BePREPared-1.apk" class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-brand-500/15 border border-brand-500/30 text-brand-400 hover:bg-brand-500/25 hover:border-brand-500/50 transition-all text-sm font-semibold group">
+            <svg class="w-5 h-5 group-hover:translate-y-0.5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+            </svg>
+            <span>Android APK herunterladen</span>
+            <span class="text-2xs text-brand-400/70 font-normal">(14,7 MB)</span>
+          </a>
+
+          <!-- PWA Install -->
+          <button id="pwa-install-btn" class="hidden inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-surface-100 border border-surface-300 text-surface-800 hover:bg-surface-200 hover:border-surface-400 transition-all text-sm font-semibold group">
+            <svg class="w-5 h-5 text-brand-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+            </svg>
+            <span>Als App installieren (PWA)</span>
+          </button>
+        </div>
+
         <div class="flex items-center justify-center gap-4 mb-4">
           <button class="legal-link text-xs text-surface-600 hover:text-surface-800 underline underline-offset-2 transition-colors cursor-pointer" data-target="impressum">Impressum</button>
           <span class="text-surface-400">·</span>

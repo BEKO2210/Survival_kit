@@ -1,5 +1,5 @@
-// Version wird beim Build automatisch ersetzt (Format: YYYY-MM-DD_HH-MM)
-const CACHE_VERSION = '2026-03-06_v2';
+// Version wird beim Build automatisch ersetzt (Format: Build-Nummer)
+const CACHE_VERSION = '__BUILD_VERSION__';
 const CACHE_NAME = 'survival-kit-' + CACHE_VERSION;
 const BASE = '/Survival_kit/';
 

@@ -259,6 +259,30 @@ const { title, description = "Dein kompletter Ratgeber zur Notfallvorsorge. Eink
         });
       }
 
+      // PWA Install Prompt
+      let deferredPrompt: any = null;
+      window.addEventListener('beforeinstallprompt', (e: Event) => {
+        e.preventDefault();
+        deferredPrompt = e;
+        const btn = document.getElementById('pwa-install-btn');
+        if (btn) btn.classList.remove('hidden');
+      });
+      document.getElementById('pwa-install-btn')?.addEventListener('click', async () => {
+        if (!deferredPrompt) return;
+        deferredPrompt.prompt();
+        const { outcome } = await deferredPrompt.userChoice;
+        if (outcome === 'accepted') {
+          const btn = document.getElementById('pwa-install-btn');
+          if (btn) btn.classList.add('hidden');
+        }
+        deferredPrompt = null;
+      });
+      window.addEventListener('appinstalled', () => {
+        const btn = document.getElementById('pwa-install-btn');
+        if (btn) btn.classList.add('hidden');
+        deferredPrompt = null;
+      });
+
       // Offline indicator
       function updateOnlineStatus() {
         const indicator = document.getElementById('offline-indicator');
