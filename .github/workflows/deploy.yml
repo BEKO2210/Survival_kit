@@ -3,7 +3,7 @@
 # =============================================================================
 #  Automatisches Build & Deployment auf GitHub Pages
 #  Astro 4.x + TailwindCSS → Static Site → GitHub Pages
-#  Service Worker Version wird automatisch mit Datum+Uhrzeit gesetzt
+#  Service Worker Version wird automatisch mit fortlaufender Build-Nummer gesetzt
 # =============================================================================
 
 name: 🚀 Deploy Survival Guide to GitHub Pages
@@ -52,10 +52,10 @@ jobs:
       - name: 📚 Abhängigkeiten installieren
         run: npm install
 
-      # --- Build-Version generieren (Datum + Uhrzeit) ---
+      # --- Build-Version generieren (fortlaufende Nummer via Run-ID) ---
       - name: 🏷️ Build-Version setzen
         run: |
-          BUILD_VERSION=$(TZ='Europe/Berlin' date '+%Y-%m-%d_%H-%M')
+          BUILD_VERSION="b${{ github.run_number }}"
           echo "BUILD_VERSION=$BUILD_VERSION" >> $GITHUB_ENV
           echo "📌 Build-Version: $BUILD_VERSION"
 

@@ -17,6 +17,7 @@
 ## Funktionen
 
 - **📱 PWA (Progressive Web App)** – Installierbar auf Android & iOS
+- **📲 Android APK** – Direkt als App herunterladen ([BePREPared-1.apk](https://beko2210.github.io/Survival_kit/BePREPared-1.apk), ~15 MB)
 - **🔌 Offline-fähig** – Alle Daten lokal verfügbar, kein Internet nötig (inkl. PDF's)
 - **📄 PDF-Export** – Checklisten und Listen als PDF herunterladen (Offline - Da die PDF Datein auf dem Gerät generiert werden)
 - **🍎 Lebensmittel-Haltbarkeiten** – Übersicht über Haltbarkeit von Notvorräten (Detailansicht in PDF)
@@ -26,12 +27,24 @@
 - **☢️ Nukleare Notfälle** – Schutzmaßnahmen bei atomaren Gefahren
 - **🔍 Schnellsuche** – Durch alle Inhalte suchen
 
+## Installation
+
+### Als PWA (alle Plattformen)
+1. Webseite im Browser öffnen: https://beko2210.github.io/Survival_kit/
+2. Im Footer auf **"Als App installieren (PWA)"** klicken
+3. Alternativ: Browser-Menü → "Zum Startbildschirm hinzufügen"
+
+### Als Android APK
+1. [BePREPared-1.apk](https://beko2210.github.io/Survival_kit/BePREPared-1.apk) herunterladen (~15 MB)
+2. In den Android-Einstellungen "Installation aus unbekannten Quellen" erlauben
+3. Die heruntergeladene APK-Datei öffnen und installieren
+
 ## Technologie
 
 - **Framework:** [Astro](https://astro.build) 5.x
 - **Styling:** Tailwind CSS 4.x
 - **Sprache:** TypeScript
-- **PWA:** Service Worker mit Cache-Strategie
+- **PWA:** Service Worker mit Cache-Strategie (Build-basierte Versionierung)
 - **PDF-Export:** jsPDF
 
 ## Schnellstart
