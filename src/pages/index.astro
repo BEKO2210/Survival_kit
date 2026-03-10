@@ -21,12 +21,28 @@ function badgeClass(p: string) {
 ---
 
 <Layout title="Be PREPared Survival Guide -- Krisenvorsorge für dich und deine Familie">
+  <!-- Structured Data: WebApplication -->
+  <script type="application/ld+json" set:html={JSON.stringify({
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "Be PREPared Survival Guide",
+    "description": "Dein kompletter Ratgeber zur Notfallvorsorge. Einkaufslisten, Haltbarkeiten, Checklisten - für Einzelpersonen, Paare und Familien.",
+    "url": "https://BEKO2210.github.io/Survival_kit/",
+    "applicationCategory": "UtilitiesApplication",
+    "operatingSystem": "All",
+    "offers": { "@type": "Offer", "price": "0", "priceCurrency": "EUR" },
+    "author": { "@type": "Person", "name": "Belkis Aslani" },
+    "inLanguage": "de",
+    "browserRequirements": "Requires JavaScript. Requires HTML5.",
+    "softwareVersion": "1.0.0"
+  })} />
   <Navigation />
 
   <!-- Search overlay -->
-  <div id="search-overlay" class="fixed inset-0 z-[60] bg-surface-0/95 backdrop-blur-xl hidden">
+  <div id="search-overlay" class="fixed inset-0 z-[60] bg-surface-0/95 backdrop-blur-xl hidden" role="dialog" aria-modal="true" aria-label="Suche">
     <div class="max-w-2xl mx-auto px-4 pt-20 sm:pt-28">
       <div class="flex items-center gap-3 mb-6">
+        <label for="search-input" class="sr-only">Suchbegriff eingeben</label>
         <input id="search-input" type="search" placeholder="Suche z.B. Reis, Erste Hilfe, Wasserfilter..." autocomplete="off"
           class="flex-1 bg-surface-200 border border-surface-300 rounded-xl px-4 py-3 text-sm text-surface-900 placeholder-surface-600 focus:outline-none focus:ring-2 focus:ring-brand-500" />
         <button id="search-close" type="button" class="p-2.5 rounded-lg bg-surface-200 hover:bg-surface-300 text-surface-700 transition-colors" aria-label="Suche schließen">
@@ -1063,7 +1079,7 @@ function badgeClass(p: string) {
     <footer class="py-12 px-4 border-t border-surface-300/50">
       <div class="max-w-7xl mx-auto text-center">
         <div class="flex items-center justify-center gap-2 mb-3">
-          <img src="/Survival_kit/icon-192x192.png" alt="Survival Kit Logo" class="w-6 h-6 rounded-md" />
+          <img src="/Survival_kit/icon-192x192.png" alt="Be PREPared Logo" class="w-6 h-6 rounded-md" width="24" height="24" loading="lazy" />
           <span class="text-sm font-semibold text-surface-800">Be <span class="text-red-400">PREP</span>ared Survival Guide</span>
         </div>
         <p class="text-xs text-surface-600 max-w-md mx-auto mb-4 leading-relaxed">

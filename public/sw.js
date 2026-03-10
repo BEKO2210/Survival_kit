@@ -1,5 +1,6 @@
 // Service Worker for Be PREPared PWA
-const CACHE_VERSION = 'v2';
+// Version is injected at build time by CI/CD pipeline
+const CACHE_VERSION = '__BUILD_VERSION__';
 const CACHE_NAME = 'survival-kit-' + CACHE_VERSION;
 const BASE = '/Survival_kit/';
 
@@ -11,8 +12,6 @@ const PRECACHE_URLS = [
   BASE + 'icon-512x512.png',
   BASE + 'favicon.svg',
   BASE + 'apple-touch-icon.png',
-  BASE + 'screenshot-wide.png',
-  BASE + 'screenshot-narrow.png',
 ];
 
 // Install: pre-cache core assets
@@ -24,7 +23,7 @@ self.addEventListener('install', (event) => {
   );
 });
 
-// Activate: clean up old caches, notify clients of update
+// Activate: clean up ALL old caches, notify clients of update
 self.addEventListener('activate', (event) => {
   event.waitUntil(
     caches.keys().then((keys) => {
@@ -32,16 +31,16 @@ self.addEventListener('activate', (event) => {
         keys.filter((key) => key !== CACHE_NAME).map((key) => caches.delete(key))
       );
     }).then(() => {
-      self.clients.claim();
-      // Notify all clients that a new version is active
-      self.clients.matchAll().then((clients) => {
-        clients.forEach((client) => client.postMessage({ type: 'SW_UPDATED', version: CACHE_VERSION }));
-      });
+      return self.clients.claim();
+    }).then(() => {
+      return self.clients.matchAll();
+    }).then((clients) => {
+      clients.forEach((client) => client.postMessage({ type: 'SW_UPDATED', version: CACHE_VERSION }));
     })
   );
 });
 
-// Fetch: network-first for HTML, cache-first for assets
+// Fetch: network-first for HTML, stale-while-revalidate for assets
 self.addEventListener('fetch', (event) => {
   const url = new URL(event.request.url);
 
@@ -51,7 +50,7 @@ self.addEventListener('fetch', (event) => {
   // Skip cross-origin requests
   if (url.origin !== self.location.origin) return;
 
-  // HTML pages: network-first (fallback to cache)
+  // HTML pages: network-first (fallback to cache for offline)
   if (event.request.headers.get('accept')?.includes('text/html')) {
     event.respondWith(
       fetch(event.request)
@@ -65,30 +64,22 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // Static assets (JS, CSS, images, fonts): cache-first with network fallback
+  // Static assets: stale-while-revalidate
+  // Serve from cache immediately, but also fetch from network to update cache
   event.respondWith(
-    caches.match(event.request).then((cached) => {
-      if (cached) return cached;
-      return fetch(event.request).then((response) => {
-        if (response.ok) {
-          const clone = response.clone();
-          caches.open(CACHE_NAME).then((cache) => cache.put(event.request, clone));
-        }
-        return response;
+    caches.open(CACHE_NAME).then((cache) => {
+      return cache.match(event.request).then((cached) => {
+        const fetchPromise = fetch(event.request).then((response) => {
+          if (response.ok) {
+            cache.put(event.request, response.clone());
+          }
+          return response;
+        }).catch(() => cached);
+
+        return cached || fetchPromise;
       });
     })
   );
-});
-
-// Periodic sync for background updates
-self.addEventListener('periodicsync', (event) => {
-  if (event.tag === 'update-cache') {
-    event.waitUntil(
-      caches.open(CACHE_NAME).then((cache) => {
-        return cache.addAll(PRECACHE_URLS);
-      })
-    );
-  }
 });
 
 // Push notification support

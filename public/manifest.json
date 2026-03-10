@@ -6,19 +6,13 @@
   "scope": "/Survival_kit/",
   "id": "/Survival_kit/",
   "display": "standalone",
-  "display_override": ["standalone", "minimal-ui"],
   "background_color": "#09090b",
   "theme_color": "#0d8b4f",
   "orientation": "portrait-primary",
   "lang": "de",
   "dir": "ltr",
   "categories": ["education", "lifestyle", "utilities"],
-  "iarc_rating_id": "",
   "prefer_related_applications": false,
-  "related_applications": [],
-  "launch_handler": {
-    "client_mode": "navigate-existing"
-  },
   "icons": [
     {
       "src": "/Survival_kit/icon-192x192.png",
@@ -79,7 +73,7 @@
       "name": "PDF Downloads",
       "short_name": "PDFs",
       "description": "Alle Checklisten als PDF herunterladen",
-      "url": "/Survival_kit/#pdfs",
+      "url": "/Survival_kit/#downloads",
       "icons": [
         {
           "src": "/Survival_kit/icon-192x192.png",
@@ -101,37 +95,5 @@
         }
       ]
     }
-  ],
-  "share_target": {
-    "action": "/Survival_kit/",
-    "method": "GET",
-    "params": {
-      "title": "title",
-      "text": "text",
-      "url": "url"
-    }
-  },
-  "protocol_handlers": [
-    {
-      "protocol": "web+beprepared",
-      "url": "/Survival_kit/?section=%s"
-    }
-  ],
-  "file_handlers": [
-    {
-      "action": "/Survival_kit/",
-      "accept": {
-        "application/pdf": [".pdf"]
-      }
-    }
-  ],
-  "edge_side_panel": {
-    "preferred_width": 400
-  },
-  "scope_extensions": [],
-  "widgets": [],
-  "note_taking": {
-    "new_note_url": "/Survival_kit/"
-  },
-  "handle_links": "preferred"
+  ]
 }
