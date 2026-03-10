@@ -16,13 +16,13 @@ const navItems = [
 ];
 ---
 
-<nav class="fixed top-0 left-0 right-0 z-50 no-print">
+<nav class="fixed top-0 left-0 right-0 z-50 no-print" aria-label="Hauptnavigation">
   <div class="bg-surface-0/80 backdrop-blur-xl border-b border-surface-300/50">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="flex items-center justify-between h-14 sm:h-16">
         <!-- Logo -->
         <a href="#start" class="flex items-center gap-2.5 group">
-          <img src="/Survival_kit/icon-192x192.png" alt="Survival Kit Logo" class="w-8 h-8 rounded-lg transition-transform group-hover:scale-105" />
+          <img src="/Survival_kit/icon-192x192.png" alt="Be PREPared Logo" class="w-8 h-8 rounded-lg transition-transform group-hover:scale-105" width="32" height="32" />
           <span class="text-sm font-semibold tracking-tight">
             Be <span class="text-red-400">PREP</span>ared<span class="text-surface-600 font-normal ml-1">Survival</span>
           </span>
@@ -56,7 +56,7 @@ const navItems = [
         <button
           id="menu-toggle"
           class="lg:hidden p-2 -mr-2 rounded-lg text-surface-600 hover:text-surface-900 hover:bg-surface-200/60 transition-colors"
-          aria-label="Menu"
+          aria-label="Menü öffnen"
           aria-expanded="false"
           aria-controls="mobile-menu"
         >

@@ -5,6 +5,7 @@ interface Props {
 }
 
 const { title, description = "Dein kompletter Ratgeber zur Notfallvorsorge. Einkaufslisten, Haltbarkeiten, Checklisten - für Einzelpersonen, Paare und Familien." } = Astro.props;
+const canonicalURL = new URL(Astro.url.pathname, Astro.site);
 ---
 
 <!doctype html>
@@ -14,20 +15,54 @@ const { title, description = "Dein kompletter Ratgeber zur Notfallvorsorge. Eink
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content={description} />
     <meta name="generator" content={Astro.generator} />
-    <link rel="icon" type="image/png" href="/Survival_kit/icon-192x192.png" />
+
+    <!-- Canonical -->
+    <link rel="canonical" href={canonicalURL.href} />
+
+    <!-- Icons -->
+    <link rel="icon" type="image/svg+xml" href="/Survival_kit/favicon.svg" />
+    <link rel="icon" type="image/png" sizes="192x192" href="/Survival_kit/icon-192x192.png" />
     <link rel="apple-touch-icon" href="/Survival_kit/apple-touch-icon.png" />
+
+    <!-- PWA -->
     <link rel="manifest" href="/Survival_kit/manifest.json" />
     <meta name="theme-color" content="#0d8b4f" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-    <meta name="apple-mobile-web-app-title" content="Survival Kit" />
+    <meta name="apple-mobile-web-app-title" content="Be PREPared" />
+
+    <!-- Preload critical assets -->
+    <link rel="preload" href="/Survival_kit/icon-192x192.png" as="image" />
+
+    <!-- SEO: Open Graph -->
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonicalURL.href} />
+    <meta property="og:image" content={`${Astro.site}Survival_kit/icon-512x512.png`} />
+    <meta property="og:image:width" content="512" />
+    <meta property="og:image:height" content="512" />
+    <meta property="og:locale" content="de_DE" />
+    <meta property="og:site_name" content="Be PREPared Survival Guide" />
+
+    <!-- SEO: Twitter Card -->
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={`${Astro.site}Survival_kit/icon-512x512.png`} />
+
+    <!-- Additional SEO -->
+    <meta name="robots" content="index, follow" />
+    <meta name="author" content="Belkis Aslani" />
+    <meta name="keywords" content="Krisenvorsorge, Notfallvorsorge, Survival, Prepping, Checklisten, Einkaufsliste, Erste Hilfe, Notfallplan, PDF" />
+
     <title>{title}</title>
   </head>
   <body class="bg-surface-0 text-surface-900 font-sans antialiased overflow-x-hidden selection:bg-brand-500/30 selection:text-brand-200">
     <a href="#start" class="skip-link">Direkt zum Inhalt</a>
 
     <!-- Offline indicator -->
-    <div id="offline-indicator" class="hidden fixed top-0 left-0 right-0 z-[70] bg-amber-600 text-white text-center text-xs font-semibold py-1.5 px-4">
+    <div id="offline-indicator" class="hidden fixed top-0 left-0 right-0 z-[70] bg-amber-600 text-white text-center text-xs font-semibold py-1.5 px-4" role="status" aria-live="polite">
       Du bist offline — alle Daten sind weiterhin verfügbar
     </div>
 
@@ -35,7 +70,7 @@ const { title, description = "Dein kompletter Ratgeber zur Notfallvorsorge. Eink
     <div id="update-banner" class="hidden fixed bottom-20 left-4 right-4 sm:left-auto sm:right-5 sm:w-96 z-[70] rounded-2xl shadow-2xl shadow-black/40 overflow-hidden update-popup">
       <div class="bg-surface-100 border border-surface-300 rounded-2xl">
         <div class="flex items-start gap-3.5 p-4">
-          <img src="/Survival_kit/icon-192x192.png" alt="Be PREPared" class="w-12 h-12 rounded-xl flex-shrink-0 shadow-md" />
+          <img src="/Survival_kit/icon-192x192.png" alt="Be PREPared" class="w-12 h-12 rounded-xl flex-shrink-0 shadow-md" width="48" height="48" loading="lazy" />
           <div class="flex-1 min-w-0">
             <div class="flex items-center gap-2 mb-0.5">
               <span class="text-sm font-bold text-surface-950">Be PREPared Survival Guide</span>
