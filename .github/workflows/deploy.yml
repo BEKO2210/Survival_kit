@@ -63,12 +63,32 @@ jobs:
       - name: 🏗️ Astro Projekt bauen
         run: npm run build
 
-      # --- Version in Service Worker injizieren ---
+      # --- Version + Commit-Message in Service Worker injizieren ---
       - name: 🔄 Service Worker versionieren
         run: |
-          sed -i "s/__BUILD_VERSION__/${{ env.BUILD_VERSION }}/g" dist/sw.js
-          echo "✅ SW-Version gesetzt: ${{ env.BUILD_VERSION }}"
-          head -2 dist/sw.js
+          # Subject (erste Zeile) der letzten Commit-Message, UTF-8 safe
+          COMMIT_MSG=$(git log -1 --pretty=%s)
+          COMMIT_SHA=$(git rev-parse --short HEAD)
+          COMMIT_DATE=$(git log -1 --pretty=%cI)
+          export COMMIT_MSG COMMIT_SHA COMMIT_DATE
+          node -e '
+            const fs = require("fs");
+            const f = "dist/sw.js";
+            let s = fs.readFileSync(f, "utf8");
+            s = s.replace(/__BUILD_VERSION__/g, process.env.BUILD_VERSION);
+            // Sicheres Escapen von JS-String-Literals über JSON.stringify
+            const replaceStr = (placeholder, value) => {
+              const escaped = JSON.stringify(value || "");
+              s = s.replace(new RegExp("\"" + placeholder + "\"", "g"), escaped);
+            };
+            replaceStr("__BUILD_MESSAGE__", process.env.COMMIT_MSG);
+            replaceStr("__BUILD_SHA__", process.env.COMMIT_SHA);
+            replaceStr("__BUILD_DATE__", process.env.COMMIT_DATE);
+            fs.writeFileSync(f, s);
+          '
+          echo "✅ SW-Version gesetzt: ${BUILD_VERSION}"
+          echo "📝 Commit: ${COMMIT_SHA} – ${COMMIT_MSG}"
+          head -8 dist/sw.js
 
       # --- Pages Artefakt hochladen ---
       - name: 📤 Build-Artefakte hochladen

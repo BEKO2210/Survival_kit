@@ -67,17 +67,22 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
     </div>
 
     <!-- SW update banner -->
-    <div id="update-banner" class="hidden fixed bottom-20 left-4 right-4 sm:left-auto sm:right-5 sm:w-96 z-[70] rounded-2xl shadow-2xl shadow-black/40 overflow-hidden update-popup">
+    <div id="update-banner" class="hidden fixed bottom-20 left-4 right-4 sm:left-auto sm:right-5 sm:w-[26rem] z-[70] rounded-2xl shadow-2xl shadow-black/40 overflow-hidden update-popup" role="dialog" aria-labelledby="update-title" aria-describedby="update-message">
       <div class="bg-surface-100 border border-surface-300 rounded-2xl">
         <div class="flex items-start gap-3.5 p-4">
           <img src="/Survival_kit/icon-192x192.png" alt="Be PREPared" class="w-12 h-12 rounded-xl flex-shrink-0 shadow-md" width="48" height="48" loading="lazy" />
           <div class="flex-1 min-w-0">
-            <div class="flex items-center gap-2 mb-0.5">
-              <span class="text-sm font-bold text-surface-950">Be PREPared Survival Guide</span>
+            <div class="flex items-center gap-2 mb-1">
+              <span id="update-title" class="text-sm font-bold text-surface-950">Update verfügbar</span>
               <span class="px-1.5 py-0.5 rounded-md bg-brand-500/15 text-brand-400 text-2xs font-semibold">NEU</span>
             </div>
-            <p class="text-xs text-surface-700 leading-relaxed">Neue Version verfügbar. Aktualisiere jetzt für die neuesten Daten und Verbesserungen.</p>
-            <p id="update-version" class="text-2xs text-surface-600 mt-1"></p>
+            <p class="text-2xs text-surface-600 uppercase tracking-wider font-semibold mb-1">Was ist neu?</p>
+            <p id="update-message" class="text-xs text-surface-800 leading-relaxed font-medium break-words">Eine neue Version des Survival Guide steht bereit.</p>
+            <div class="flex items-center gap-2 mt-2 text-2xs text-surface-600">
+              <span id="update-version" class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-surface-200 font-mono"></span>
+              <span id="update-sha" class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-surface-200 font-mono hidden"></span>
+              <span id="update-date" class="ml-auto"></span>
+            </div>
           </div>
           <button id="update-close" type="button" class="p-1 rounded-lg text-surface-600 hover:text-surface-900 hover:bg-surface-200 transition-colors flex-shrink-0" aria-label="Schließen">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
@@ -271,27 +276,128 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
 
       // Register Service Worker for offline support
       if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.register('/Survival_kit/sw.js').catch(() => {});
-        navigator.serviceWorker.addEventListener('message', (event) => {
-          if (event.data?.type === 'SW_UPDATED') {
-            const banner = document.getElementById('update-banner');
-            const versionEl = document.getElementById('update-version');
-            if (banner) {
-              if (versionEl && event.data.version) {
-                versionEl.textContent = 'Version: ' + event.data.version.replace('_', ' ');
-              }
-              banner.classList.remove('hidden');
+        // If there's already a controller, this is a returning visitor — updates are meaningful.
+        // On first install, controller is null; we suppress the banner until an actual update.
+        const hadController = !!navigator.serviceWorker.controller;
+        const DISMISS_KEY = 'sw-update-dismissed-version';
+
+        type UpdateInfo = {
+          version?: string;
+          message?: string;
+          sha?: string;
+          date?: string;
+        };
+
+        const isPlaceholder = (v?: string) =>
+          !!v && /^__[A-Z_]+__$/.test(v);
+
+        const formatDate = (iso?: string) => {
+          if (!iso) return '';
+          const d = new Date(iso);
+          if (isNaN(d.getTime())) return '';
+          return d.toLocaleDateString('de-DE', {
+            day: '2-digit', month: '2-digit', year: 'numeric',
+          });
+        };
+
+        const showUpdateBanner = (info: UpdateInfo = {}) => {
+          if (!hadController) return; // first install — no update to show
+          const { version, message, sha, date } = info;
+          if (version && localStorage.getItem(DISMISS_KEY) === version) return;
+
+          const banner = document.getElementById('update-banner');
+          if (!banner) return;
+
+          const messageEl = document.getElementById('update-message');
+          const versionEl = document.getElementById('update-version');
+          const shaEl = document.getElementById('update-sha');
+          const dateEl = document.getElementById('update-date');
+
+          if (messageEl && message && !isPlaceholder(message)) {
+            messageEl.textContent = message;
+          }
+          if (versionEl) {
+            versionEl.textContent = version && !isPlaceholder(version)
+              ? version.replace('_', ' ')
+              : 'neu';
+          }
+          if (shaEl) {
+            if (sha && !isPlaceholder(sha)) {
+              shaEl.textContent = '#' + sha;
+              shaEl.classList.remove('hidden');
+            } else {
+              shaEl.classList.add('hidden');
             }
           }
+          if (dateEl) {
+            dateEl.textContent = formatDate(date);
+          }
+
+          banner.dataset.version = version || '';
+          banner.classList.remove('hidden');
+        };
+
+        navigator.serviceWorker.register('/Survival_kit/sw.js').then((registration) => {
+          // Detect a waiting worker (update already downloaded)
+          if (registration.waiting && hadController) {
+            showUpdateBanner({});
+          }
+          // Detect a new worker being installed
+          registration.addEventListener('updatefound', () => {
+            const newWorker = registration.installing;
+            if (!newWorker) return;
+            newWorker.addEventListener('statechange', () => {
+              if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                showUpdateBanner({});
+              }
+            });
+          });
+          // Check for updates when the tab regains focus
+          document.addEventListener('visibilitychange', () => {
+            if (document.visibilityState === 'visible') {
+              registration.update().catch(() => {});
+            }
+          });
+        }).catch(() => {});
+
+        navigator.serviceWorker.addEventListener('message', (event) => {
+          if (event.data?.type === 'SW_UPDATED') {
+            showUpdateBanner({
+              version: event.data.version,
+              message: event.data.message,
+              sha: event.data.sha,
+              date: event.data.date,
+            });
+          }
         });
+
+        // Reload once the new SW takes control (triggered by SKIP_WAITING)
+        let refreshing = false;
+        navigator.serviceWorker.addEventListener('controllerchange', () => {
+          if (refreshing) return;
+          refreshing = true;
+          location.reload();
+        });
+
         // Update popup buttons
-        document.getElementById('update-now')?.addEventListener('click', () => location.reload());
-        document.getElementById('update-later')?.addEventListener('click', () => {
-          document.getElementById('update-banner')?.classList.add('hidden');
+        document.getElementById('update-now')?.addEventListener('click', () => {
+          navigator.serviceWorker.getRegistration().then((reg) => {
+            if (reg?.waiting) {
+              reg.waiting.postMessage({ type: 'SKIP_WAITING' });
+            } else {
+              location.reload();
+            }
+          }).catch(() => location.reload());
         });
-        document.getElementById('update-close')?.addEventListener('click', () => {
-          document.getElementById('update-banner')?.classList.add('hidden');
-        });
+        const dismissBanner = () => {
+          const banner = document.getElementById('update-banner');
+          if (!banner) return;
+          const v = banner.dataset.version;
+          if (v) localStorage.setItem(DISMISS_KEY, v);
+          banner.classList.add('hidden');
+        };
+        document.getElementById('update-later')?.addEventListener('click', dismissBanner);
+        document.getElementById('update-close')?.addEventListener('click', dismissBanner);
       }
 
       // PWA Install Prompt

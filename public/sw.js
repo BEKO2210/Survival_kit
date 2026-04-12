@@ -1,6 +1,11 @@
 // Service Worker for Be PREPared PWA
-// Version is injected at build time by CI/CD pipeline
+// Version, Commit-Message, SHA und Datum werden vom CI-Build injiziert.
+// Die String-Placeholders stehen bewusst in "..."-Strings, damit der CI-Build
+// sie mit JSON-escaped Werten ersetzen kann (siehe .github/workflows/deploy.yml).
 const CACHE_VERSION = '__BUILD_VERSION__';
+const BUILD_MESSAGE = "__BUILD_MESSAGE__";
+const BUILD_SHA = "__BUILD_SHA__";
+const BUILD_DATE = "__BUILD_DATE__";
 const CACHE_NAME = 'survival-kit-' + CACHE_VERSION;
 const BASE = '/Survival_kit/';
 
@@ -23,21 +28,39 @@ self.addEventListener('install', (event) => {
   );
 });
 
-// Activate: clean up ALL old caches, notify clients of update
+// Activate: clean up old caches; only notify clients when this was a real UPDATE
+// (i.e. there was a previous "survival-kit-*" cache) — not on first install.
 self.addEventListener('activate', (event) => {
   event.waitUntil(
     caches.keys().then((keys) => {
-      return Promise.all(
-        keys.filter((key) => key !== CACHE_NAME).map((key) => caches.delete(key))
+      const oldCaches = keys.filter(
+        (key) => key !== CACHE_NAME && key.startsWith('survival-kit-')
       );
-    }).then(() => {
-      return self.clients.claim();
-    }).then(() => {
-      return self.clients.matchAll();
-    }).then((clients) => {
-      clients.forEach((client) => client.postMessage({ type: 'SW_UPDATED', version: CACHE_VERSION }));
+      const isRealUpdate = oldCaches.length > 0 && CACHE_VERSION !== '__BUILD_VERSION__';
+
+      return Promise.all(oldCaches.map((key) => caches.delete(key)))
+        .then(() => self.clients.claim())
+        .then(() => (isRealUpdate ? self.clients.matchAll() : []))
+        .then((clients) => {
+          clients.forEach((client) =>
+            client.postMessage({
+              type: 'SW_UPDATED',
+              version: CACHE_VERSION,
+              message: BUILD_MESSAGE,
+              sha: BUILD_SHA,
+              date: BUILD_DATE,
+            })
+          );
+        });
     })
   );
+});
+
+// Allow the page to trigger an immediate activation of a waiting worker
+self.addEventListener('message', (event) => {
+  if (event.data && event.data.type === 'SKIP_WAITING') {
+    self.skipWaiting();
+  }
 });
 
 // Fetch: network-first for HTML, stale-while-revalidate for assets
