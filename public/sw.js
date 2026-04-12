@@ -1,6 +1,11 @@
 // Service Worker for Be PREPared PWA
-// Version is injected at build time by CI/CD pipeline
+// Version, Commit-Message, SHA und Datum werden vom CI-Build injiziert.
+// Die String-Placeholders stehen bewusst in "..."-Strings, damit der CI-Build
+// sie mit JSON-escaped Werten ersetzen kann (siehe .github/workflows/deploy.yml).
 const CACHE_VERSION = '__BUILD_VERSION__';
+const BUILD_MESSAGE = "__BUILD_MESSAGE__";
+const BUILD_SHA = "__BUILD_SHA__";
+const BUILD_DATE = "__BUILD_DATE__";
 const CACHE_NAME = 'survival-kit-' + CACHE_VERSION;
 const BASE = '/Survival_kit/';
 
@@ -38,7 +43,13 @@ self.addEventListener('activate', (event) => {
         .then(() => (isRealUpdate ? self.clients.matchAll() : []))
         .then((clients) => {
           clients.forEach((client) =>
-            client.postMessage({ type: 'SW_UPDATED', version: CACHE_VERSION })
+            client.postMessage({
+              type: 'SW_UPDATED',
+              version: CACHE_VERSION,
+              message: BUILD_MESSAGE,
+              sha: BUILD_SHA,
+              date: BUILD_DATE,
+            })
           );
         });
     })
