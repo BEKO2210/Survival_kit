@@ -437,6 +437,36 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
       window.addEventListener('online', updateOnlineStatus);
       window.addEventListener('offline', updateOnlineStatus);
       updateOnlineStatus();
+
+      // Footer Typewriter – startet sobald sichtbar, markiert sich danach als fertig
+      const tw = document.querySelector('.typewriter-text') as HTMLElement | null;
+      if (tw) {
+        const run = () => {
+          if (tw.classList.contains('is-typing') || tw.classList.contains('is-done')) return;
+          tw.classList.add('is-typing');
+          const onEnd = (e: AnimationEvent) => {
+            if (e.animationName === 'typewriter-type') {
+              tw.classList.remove('is-typing');
+              tw.classList.add('is-done');
+              tw.removeEventListener('animationend', onEnd as EventListener);
+            }
+          };
+          tw.addEventListener('animationend', onEnd as EventListener);
+        };
+        if ('IntersectionObserver' in window) {
+          const io = new IntersectionObserver((entries) => {
+            entries.forEach((entry) => {
+              if (entry.isIntersecting) {
+                run();
+                io.disconnect();
+              }
+            });
+          }, { threshold: 0.6 });
+          io.observe(tw);
+        } else {
+          run();
+        }
+      }
     </script>
 
     <style is:global>
@@ -538,6 +568,57 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
         pointer-events: none;
       }
       @keyframes stat-pulse { 0%,100% { opacity: 0.03; } 50% { opacity: 0.06; } }
+
+      /* --- Footer: Heartbeat + Typewriter --- */
+      .heartbeat {
+        display: inline-flex;
+        transform-origin: center;
+        animation: heartbeat 1.4s ease-in-out infinite;
+        filter: drop-shadow(0 0 4px rgba(239, 68, 68, 0.35));
+      }
+      @keyframes heartbeat {
+        0%, 28%, 70%, 100% { transform: scale(1); }
+        14% { transform: scale(1.28); }
+        42% { transform: scale(1.14); }
+      }
+
+      .typewriter {
+        display: inline-flex;
+        align-items: center;
+        font-weight: 600;
+        color: #d4d4d8;
+      }
+      .typewriter-text {
+        display: inline-block;
+        overflow: hidden;
+        white-space: nowrap;
+        max-width: 0;
+        border-right: 1.5px solid #0d8b4f;
+        vertical-align: bottom;
+      }
+      .typewriter-text.is-typing {
+        animation:
+          typewriter-type 1.6s steps(13, end) 0.3s forwards,
+          typewriter-caret 0.75s step-end infinite;
+      }
+      .typewriter-text.is-done {
+        max-width: 100%;
+        border-right-color: transparent;
+        animation: none;
+      }
+      @keyframes typewriter-type {
+        from { max-width: 0; }
+        to   { max-width: 11em; }
+      }
+      @keyframes typewriter-caret {
+        0%, 100% { border-right-color: transparent; }
+        50%      { border-right-color: #0d8b4f; }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        .heartbeat { animation: none !important; }
+        .typewriter-text { animation: none !important; max-width: 100% !important; border-right-color: transparent !important; }
+      }
 
       /* --- Back to top --- */
       #btt { opacity: 0; transform: translateY(8px); pointer-events: none; transition: opacity 0.25s, transform 0.25s; }
