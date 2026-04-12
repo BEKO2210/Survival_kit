@@ -271,27 +271,80 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
 
       // Register Service Worker for offline support
       if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.register('/Survival_kit/sw.js').catch(() => {});
+        // If there's already a controller, this is a returning visitor — updates are meaningful.
+        // On first install, controller is null; we suppress the banner until an actual update.
+        const hadController = !!navigator.serviceWorker.controller;
+        const DISMISS_KEY = 'sw-update-dismissed-version';
+
+        const showUpdateBanner = (version?: string) => {
+          if (!hadController) return; // first install — no update to show
+          if (version && localStorage.getItem(DISMISS_KEY) === version) return;
+          const banner = document.getElementById('update-banner');
+          const versionEl = document.getElementById('update-version');
+          if (!banner) return;
+          if (versionEl && version) {
+            versionEl.textContent = 'Version: ' + version.replace('_', ' ');
+          }
+          banner.dataset.version = version || '';
+          banner.classList.remove('hidden');
+        };
+
+        navigator.serviceWorker.register('/Survival_kit/sw.js').then((registration) => {
+          // Detect a waiting worker (update already downloaded)
+          if (registration.waiting && hadController) {
+            showUpdateBanner();
+          }
+          // Detect a new worker being installed
+          registration.addEventListener('updatefound', () => {
+            const newWorker = registration.installing;
+            if (!newWorker) return;
+            newWorker.addEventListener('statechange', () => {
+              if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                showUpdateBanner();
+              }
+            });
+          });
+          // Check for updates when the tab regains focus
+          document.addEventListener('visibilitychange', () => {
+            if (document.visibilityState === 'visible') {
+              registration.update().catch(() => {});
+            }
+          });
+        }).catch(() => {});
+
         navigator.serviceWorker.addEventListener('message', (event) => {
           if (event.data?.type === 'SW_UPDATED') {
-            const banner = document.getElementById('update-banner');
-            const versionEl = document.getElementById('update-version');
-            if (banner) {
-              if (versionEl && event.data.version) {
-                versionEl.textContent = 'Version: ' + event.data.version.replace('_', ' ');
-              }
-              banner.classList.remove('hidden');
-            }
+            showUpdateBanner(event.data.version);
           }
         });
+
+        // Reload once the new SW takes control (triggered by SKIP_WAITING)
+        let refreshing = false;
+        navigator.serviceWorker.addEventListener('controllerchange', () => {
+          if (refreshing) return;
+          refreshing = true;
+          location.reload();
+        });
+
         // Update popup buttons
-        document.getElementById('update-now')?.addEventListener('click', () => location.reload());
-        document.getElementById('update-later')?.addEventListener('click', () => {
-          document.getElementById('update-banner')?.classList.add('hidden');
+        document.getElementById('update-now')?.addEventListener('click', () => {
+          navigator.serviceWorker.getRegistration().then((reg) => {
+            if (reg?.waiting) {
+              reg.waiting.postMessage({ type: 'SKIP_WAITING' });
+            } else {
+              location.reload();
+            }
+          }).catch(() => location.reload());
         });
-        document.getElementById('update-close')?.addEventListener('click', () => {
-          document.getElementById('update-banner')?.classList.add('hidden');
-        });
+        const dismissBanner = () => {
+          const banner = document.getElementById('update-banner');
+          if (!banner) return;
+          const v = banner.dataset.version;
+          if (v) localStorage.setItem(DISMISS_KEY, v);
+          banner.classList.add('hidden');
+        };
+        document.getElementById('update-later')?.addEventListener('click', dismissBanner);
+        document.getElementById('update-close')?.addEventListener('click', dismissBanner);
       }
 
       // PWA Install Prompt

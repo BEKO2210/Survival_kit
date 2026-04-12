@@ -23,21 +23,33 @@ self.addEventListener('install', (event) => {
   );
 });
 
-// Activate: clean up ALL old caches, notify clients of update
+// Activate: clean up old caches; only notify clients when this was a real UPDATE
+// (i.e. there was a previous "survival-kit-*" cache) — not on first install.
 self.addEventListener('activate', (event) => {
   event.waitUntil(
     caches.keys().then((keys) => {
-      return Promise.all(
-        keys.filter((key) => key !== CACHE_NAME).map((key) => caches.delete(key))
+      const oldCaches = keys.filter(
+        (key) => key !== CACHE_NAME && key.startsWith('survival-kit-')
       );
-    }).then(() => {
-      return self.clients.claim();
-    }).then(() => {
-      return self.clients.matchAll();
-    }).then((clients) => {
-      clients.forEach((client) => client.postMessage({ type: 'SW_UPDATED', version: CACHE_VERSION }));
+      const isRealUpdate = oldCaches.length > 0 && CACHE_VERSION !== '__BUILD_VERSION__';
+
+      return Promise.all(oldCaches.map((key) => caches.delete(key)))
+        .then(() => self.clients.claim())
+        .then(() => (isRealUpdate ? self.clients.matchAll() : []))
+        .then((clients) => {
+          clients.forEach((client) =>
+            client.postMessage({ type: 'SW_UPDATED', version: CACHE_VERSION })
+          );
+        });
     })
   );
+});
+
+// Allow the page to trigger an immediate activation of a waiting worker
+self.addEventListener('message', (event) => {
+  if (event.data && event.data.type === 'SKIP_WAITING') {
+    self.skipWaiting();
+  }
 });
 
 // Fetch: network-first for HTML, stale-while-revalidate for assets
